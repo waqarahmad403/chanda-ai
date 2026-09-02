@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Chanda 🌙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0814;
+    --bg2:#140f24;
+    --purple:#8b5cf6;
+    --purple-light:#a78bfa;
+    --purple-deep:#5b3fc4;
+    --pink:#f472b6;
+    --gold:#f5c563;
+    --text:#f2eefb;
+    --muted:#8f86ab;
+    --glass:rgba(255,255,255,0.045);
+    --glass-border:rgba(255,255,255,0.09);
+    --danger:#f16a6a;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:radial-gradient(120% 120% at 15% 0%, #180f2c 0%, var(--bg) 55%, #050309 100%);
+    color:var(--text); font-family:'Poppins',sans-serif; overflow:hidden;
+    min-height:100vh; min-height:100dvh;
+  }
+  ::selection{background:var(--purple-deep); color:#fff;}
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--purple-deep); border-radius:10px;}
+
+  .ambient{position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none;}
+  .orb{position:absolute; border-radius:50%; filter:blur(70px); opacity:.3; animation:float 16s ease-in-out infinite;}
+  .orb1{width:340px; height:340px; background:var(--purple); top:-100px; left:-80px;}
+  .orb2{width:260px; height:260px; background:var(--pink); bottom:-80px; right:-60px; animation-delay:-5s;}
+  .orb3{width:200px; height:200px; background:var(--gold); top:40%; left:60%; opacity:.15; animation-delay:-10s;}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(30px,-24px) scale(1.08);}}
+
+  #app{position:fixed; inset:0; z-index:1; display:flex; flex-direction:column; height:100%;}
+
+  /* ---------- DESKTOP / WIDE SCREENS: centered app shell, not full-bleed ---------- */
+  @media (min-width: 720px){
+    body{overflow:auto;}
+    #app{
+      left:50%; right:auto; transform:translateX(-50%);
+      width:100%; max-width:620px;
+      border-left:1px solid var(--glass-border); border-right:1px solid var(--glass-border);
+      box-shadow:0 0 90px rgba(139,92,246,.12);
+      background:rgba(11,8,20,.35); backdrop-filter:blur(6px);
+    }
+  }
+
+  /* ---------- ONBOARDING ---------- */
+  #onboarding{
+    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 0%, #1c1436 0%, #08060f 70%); padding:24px;
+  }
+  .ob-card{
+    width:100%; max-width:420px; background:var(--glass); border:1px solid var(--glass-border);
+    backdrop-filter:blur(20px); border-radius:28px; padding:38px 30px; text-align:center;
+    box-shadow:0 30px 80px rgba(139,92,246,.15);
+  }
+  .ob-orb{
+    width:70px; height:70px; margin:0 auto 20px; border-radius:50%; position:relative;
+    background:#1c1533; border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 40px rgba(139,92,246,.35);
+    animation:pulse 3s ease-in-out infinite;
+  }
+  .ob-orb svg{width:30px; height:30px;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 30px rgba(139,92,246,.3);} 50%{box-shadow:0 0 55px rgba(244,114,182,.4);}}
+  .ob-title{font-size:24px; font-weight:600; margin:0 0 6px;}
+  .ob-sub{color:var(--muted); font-size:13.5px; margin:0 0 26px;}
+  .ob-step{display:none;}
+  .ob-step.active{display:block; animation:fadeUp .4s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  .ob-input{
+    width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);
+    background:rgba(255,255,255,.04); color:var(--text); font-size:15px; margin-bottom:14px; outline:none;
+    font-family:'Poppins',sans-serif;
+  }
+  .ob-input:focus{border-color:var(--purple);}
+  .btn{
+    width:100%; padding:14px; border-radius:14px; border:none; cursor:pointer;
+    background:linear-gradient(135deg, var(--purple), var(--pink)); color:#fff; font-weight:600; font-size:15px;
+    font-family:'Poppins',sans-serif; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(139,92,246,.35);}
+  .btn:active{transform:translateY(0);}
+  .btn.ghost{background:transparent; border:1px solid var(--glass-border); color:var(--muted); margin-top:10px;}
+  .ob-choices{display:flex; gap:10px; margin-bottom:16px;}
+  .chip{
+    flex:1; padding:12px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,.03);
+    color:var(--muted); cursor:pointer; font-size:13px; text-align:center; transition:.2s;
+  }
+  .chip.selected{border-color:var(--purple); background:rgba(139,92,246,.15); color:#fff;}
+  .ob-note{font-size:11px; color:var(--muted); margin-top:16px; line-height:1.6;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex; align-items:center; justify-content:space-between; padding:calc(14px + env(safe-area-inset-top, 0px)) 18px 14px;
+    border-bottom:1px solid var(--glass-border); backdrop-filter:blur(10px); flex-shrink:0;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-text{display:flex; flex-direction:column;}
+
+  /* mini animated orb, lives in the header (not a fixed block in the chat area) */
+  .avatar-wrap-mini{position:relative; width:40px; height:40px; flex-shrink:0;}
+  .avatar-ring-mini{
+    position:absolute; inset:0; border-radius:50%;
+    background:conic-gradient(from 0deg, var(--e1,var(--purple)), var(--e2,var(--pink)), var(--e1,var(--purple)));
+    animation:spin 10s linear infinite; filter:blur(.5px);
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .brand-orb{
+    position:absolute; inset:3px; border-radius:50%; background:#1c1533; border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+    transition:box-shadow .6s ease; font-size:16px;
+  }
+  .brand-orb.speaking{animation:speak-pulse 1.1s ease-in-out infinite;}
+  .brand-orb.listening{animation:listen-pulse 1.4s ease-in-out infinite;}
+  @keyframes speak-pulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.08);}}
+  @keyframes listen-pulse{0%,100%{box-shadow:inset 0 0 10px rgba(0,0,0,.4), 0 0 0 rgba(244,114,182,0);} 50%{box-shadow:inset 0 0 10px rgba(0,0,0,.4), 0 0 14px rgba(244,114,182,.6);}}
+  .brand-orb svg{width:16px; height:16px;}
+
+  .brand h1{font-size:16px; margin:0; font-weight:600;}
+  .brand span{font-size:11px; color:var(--muted); display:block; margin-top:1px;}
+  .pulse-wave-mini{display:flex; align-items:center; gap:2px; height:9px; margin-top:3px;}
+  .pulse-wave-mini span{
+    width:2px; border-radius:2px; background:linear-gradient(180deg, var(--e1,var(--purple)), var(--e2,var(--pink)));
+    height:2px; transition:height .18s ease;
+  }
+  .head-actions{display:flex; gap:8px;}
+  .icon-btn{
+    width:36px; height:36px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass);
+    color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px;
+    transition:.2s;
+  }
+  .icon-btn:hover{color:#fff; border-color:var(--purple);}
+  .icon-btn.active{color:var(--pink); border-color:var(--pink); background:rgba(244,114,182,.12);}
+
+  /* ---------- MAIN ---------- */
+  main{flex:1; display:flex; flex-direction:column; min-height:0;}
+
+  /* ---------- CHAT ---------- */
+  #chat{flex:1; overflow-y:auto; padding:12px 16px 8px; display:flex; flex-direction:column; gap:10px; min-height:0;}
+  .bubble-row{display:flex; width:100%; align-items:flex-end; gap:6px;}
+  .bubble-row.user{justify-content:flex-end;}
+  .bubble-row.chanda{justify-content:flex-start;}
+  .bubble-avatar{
+    width:44px; height:44px; border-radius:50%; background:var(--glass); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;
+  }
+  .bubble{
+    max-width:78%; padding:11px 15px; border-radius:18px; font-size:14.5px; line-height:1.5;
+    animation:popin .25s ease; word-wrap:break-word;
+  }
+  @keyframes popin{from{opacity:0; transform:translateY(6px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);}}
+  .bubble-row.user .bubble{background:linear-gradient(135deg, rgba(139,92,246,.4), rgba(244,114,182,.28)); border:1px solid rgba(255,255,255,.1); border-bottom-right-radius:5px;}
+  .bubble-row.chanda .bubble{background:var(--glass); border:1px solid var(--glass-border); border-bottom-left-radius:5px;}
+  .typing{display:flex; gap:4px; padding:5px 3px;}
+  .typing span{width:6px; height:6px; border-radius:50%; background:var(--purple-light); animation:tdot 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.2s;} .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes tdot{0%,60%,100%{opacity:.3; transform:translateY(0);} 30%{opacity:1; transform:translateY(-4px);}}
+
+  /* ---------- INPUT BAR ---------- */
+  .inputbar{display:flex; align-items:center; gap:10px; padding:10px 16px calc(16px + env(safe-area-inset-bottom, 0px)); flex-shrink:0; border-top:1px solid var(--glass-border);}
+  #textInput{
+    flex:1; padding:12px 16px; border-radius:22px; border:1px solid var(--glass-border);
+    background:var(--glass); color:var(--text); font-size:16px; outline:none; font-family:'Poppins',sans-serif;
+  }
+  #textInput:focus{border-color:var(--purple);}
+  .round-btn{
+    width:44px; height:44px; border-radius:50%; border:none; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff;
+    background:linear-gradient(135deg, var(--purple), var(--pink)); transition:.2s;
+  }
+  .round-btn:active{transform:scale(.92);}
+  .round-btn.mic.on{background:linear-gradient(135deg, var(--danger), var(--pink)); animation:mic-glow 1s infinite;}
+  @keyframes mic-glow{0%,100%{box-shadow:0 0 0 rgba(241,106,106,.5);} 50%{box-shadow:0 0 20px rgba(241,106,106,.6);}}
+  .mic-hint{font-size:10.5px; color:var(--muted); text-align:center; padding-bottom:2px; min-height:14px;}
+
+  /* ---------- PANELS ---------- */
+  .panel-overlay{position:fixed; inset:0; z-index:40; background:rgba(6,4,12,.65); backdrop-filter:blur(4px); display:none; align-items:flex-end; justify-content:center;}
+  .panel-overlay.open{display:flex; animation:fadein .2s ease;}
+  @keyframes fadein{from{opacity:0;} to{opacity:1;}}
+  .panel{width:100%; max-width:480px; max-height:82vh; overflow-y:auto; background:var(--bg2); border:1px solid var(--glass-border); border-bottom:none; border-radius:26px 26px 0 0; padding:24px 22px 30px; animation:slideup .3s ease;}
+  @keyframes slideup{from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .panel h2{margin:0 0 18px; font-size:17px; display:flex; align-items:center; justify-content:space-between;}
+  .panel h2 .close{cursor:pointer; color:var(--muted); font-size:20px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:8px;}
+  input[type=range]{width:100%; accent-color:var(--purple);}
+  .memory-item{background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:11px 14px; margin-bottom:8px; font-size:13px;}
+  .memory-item .cat{font-size:9.5px; color:var(--pink); margin-bottom:4px; display:block; letter-spacing:.4px;}
+  .memory-empty{color:var(--muted); font-size:13px; text-align:center; padding:30px 10px;}
+  .danger-btn{background:rgba(241,106,106,.12); color:var(--danger); border:1px solid rgba(241,106,106,.3);}
+  .rel-stats{display:flex; gap:10px; margin-bottom:20px;}
+  .stat-card{flex:1; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:14px; text-align:center;}
+  .stat-card .num{font-size:19px; font-weight:600; background:linear-gradient(135deg,var(--purple-light),var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .stat-card .lbl{font-size:10px; color:var(--muted); margin-top:4px;}
+
+  /* ---------- SMALL PHONE SCREENS ---------- */
+  @media (max-width: 380px){
+    .brand h1{font-size:15px;}
+    .brand span{font-size:10px;}
+    .icon-btn{width:34px; height:34px; font-size:14px;}
+    .avatar-wrap-mini{width:34px; height:34px;}
+    #chat{padding:10px 12px 6px; gap:8px;}
+    .bubble{max-width:82%; padding:10px 13px; font-size:14px;}
+    .bubble-avatar{width:36px; height:36px; font-size:19px;}
+    .inputbar{padding:8px 12px calc(14px + env(safe-area-inset-bottom, 0px)); gap:8px;}
+    #textInput{padding:11px 14px;}
+    .round-btn{width:40px; height:40px; font-size:16px;}
+    .ob-card{padding:30px 22px;}
+    .panel{padding:20px 16px 24px;}
+  }
+  @media (max-width: 340px){
+    .bubble{font-size:13.5px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-card">
+    <div class="ob-orb">🌙</div>
+
+    <div class="ob-step active" data-step="1">
+      <div class="ob-title">Chanda</div>
+      <div class="ob-sub">Apki Pyari Chanda 🌙</div>
+      <button class="btn" onclick="obEnableVoice()">Shuru karein</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <header>
+    <div class="brand">
+      <div class="avatar-wrap-mini">
+        <div class="avatar-ring-mini"></div>
+        <div class="brand-orb" id="avatarCore">🌙</div>
+      </div>
+      <div class="brand-text">
+        <h1>Chanda</h1>
+        <span id="relStatus">Tumhara intezaar kar rahi thi...</span>
+        <div class="pulse-wave-mini" id="pulseWave"></div>
+      </div>
+    </div>
+    <div class="head-actions">
+      <div class="icon-btn" onclick="openPanel('settingsPanel')" title="Settings">⚙️</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="chat"></div>
+
+    <div class="mic-hint" id="micHint"></div>
+    <div class="inputbar">
+      <button class="round-btn mic" id="micBtn" onclick="toggleMic()">🎙️</button>
+
+      <input id="textInput" placeholder="Yahan likhein..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="round-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </main>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="panel-overlay" id="settingsPanel">
+  <div class="panel">
+    <h2>Settings <span class="close" onclick="closePanel('settingsPanel')">✕</span></h2>
+    <div class="field">
+      <label>Awaaz ki raftaar (Voice speed): <span id="speedVal">0.95</span></label>
+      <input type="range" id="speedRange" min="0.6" max="1.4" step="0.05" value="0.95" oninput="updateSpeed(this.value)">
+    </div>
+    <div class="field">
+      <label>Voice pitch base: <span id="pitchVal">0.9</span></label>
+      <input type="range" id="pitchRange" min="0.7" max="1.5" step="0.05" value="0.9" oninput="updatePitch(this.value)">
+    </div>
+    <div class="field">
+      <label>Awaaz (yeh har device/browser mein alag hoti hai — apni pasand yahan set karein)</label>
+      <select id="voiceSelect" class="ob-input" onchange="updateVoiceChoice(this.value)" style="margin-bottom:0;">
+        <option value="">Auto (behtar female voice khud chunegi)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Mic input language</label>
+      <div class="ob-choices">
+        <div class="chip" id="chipUrMic" onclick="selectMicLang('ur-PK',this)">Urdu (behtar accuracy)</div>
+        <div class="chip" id="chipEnMic" onclick="selectMicLang('en-US',this)">English/Roman</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Groq API Key (tez aur mufta — sirf standalone use ke liye)</label>
+      <input class="ob-input" id="groqKeyInput" type="password" placeholder="gsk_..." oninput="updateGroqKey(this.value)">
+    </div>
+    <div class="field">
+      <label>Anthropic API Key (agar Groq set na ho, iska istemal hoga)</label>
+      <input class="ob-input" id="apiKeyInput" type="password" placeholder="sk-ant-..." oninput="updateApiKey(this.value)">
+      <div style="font-size:11px;color:var(--muted);margin-top:-8px;">Yeh keys sirf aapke browser mein save hoti hain. Claude.ai ke andar chalate waqt inki zaroorat nahi.</div>
+    </div>
+    <button class="btn ghost" onclick="closePanel('settingsPanel'); openPanel('memoryPanel');">🧠 Yaadein Dekhein</button>
+    <button class="btn danger-btn" onclick="confirmResetMemory()">🗑️ Reset All Memory</button>
+    <button class="btn ghost" onclick="closePanel('settingsPanel')">Band karein</button>
+  </div>
+</div>
+
+<!-- MEMORY PANEL -->
+<div class="panel-overlay" id="memoryPanel">
+  <div class="panel">
+    <h2>Yaadein <span class="close" onclick="closePanel('memoryPanel')">✕</span></h2>
+    <div class="rel-stats">
+      <div class="stat-card"><div class="num" id="statMsgs">0</div><div class="lbl">Messages</div></div>
+      <div class="stat-card"><div class="num" id="statFacts">0</div><div class="lbl">Memories</div></div>
+      <div class="stat-card"><div class="num" id="statDays">1</div><div class="lbl">Din saath</div></div>
+    </div>
+    <div id="memoryList"></div>
+  </div>
+</div>
+
+<script>
+/* ================= STORAGE (single combined key to avoid rate limits) =================
+   Inside claude.ai's Artifact viewer, window.storage is provided and persists across
+   sessions automatically. If this file is downloaded and opened directly (file:// or
+   hosted elsewhere), window.storage does not exist — we fall back to localStorage so
+   memory still works locally in that browser. */
+const HAS_NATIVE_STORAGE = (typeof window.storage !== 'undefined');
+async function rawGet(key){
+  if(HAS_NATIVE_STORAGE){
+    try{ const r = await window.storage.get(key); return r ? r.value : null; }catch(e){ return null; }
+  }
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+async function rawSet(key, value){
+  if(HAS_NATIVE_STORAGE){
+    try{ await window.storage.set(key, value); }catch(e){ console.warn('Chanda: save skipped, will retry.', e); }
+    return;
+  }
+  try{ localStorage.setItem(key, value); }catch(e){}
+}
+
+const DEFAULT_STATE = {
+  profile: { name:'Waqar', micLang:'ur-PK', onboarded:false, voiceEnabled:true, createdAt:null, apiKey:'', groqKey:'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', preferredVoice:'' },
+  facts: [],
+  history: [],
+  stats: { messageCount:0, firstSeen:null, lastActive:null },
+  settings: { speed:0.95, pitch:0.90 }
+};
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+let saveTimer = null;
+
+async function loadState(){
+  try{
+    const raw = await rawGet('chanda:state');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
+      state.profile = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE.profile)), parsed.profile||{});
+    }
+  }catch(e){ /* no saved state yet, use defaults */ }
+}
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveStateNow, 500);
+}
+async function saveStateNow(){
+  await rawSet('chanda:state', JSON.stringify(state));
+}
+
+/* convenience accessors */
+function profile(){ return state.profile; }
+function facts(){ return state.facts; }
+function history(){ return state.history; }
+function stats(){ return state.stats; }
+function settings(){ return state.settings; }
+
+/* ================= EMOTIONS (used only internally for voice + colors, never shown in UI text) ================= */
+const EMOTIONS = {
+  Mohabbat:  {c1:'#f472b6', c2:'#c084fc', pitch:1.15, rate:0.95},
+  Khushi:    {c1:'#f5c563', c2:'#f472b6', pitch:1.25, rate:1.1},
+  Gham:      {c1:'#6b7ab8', c2:'#3d3466', pitch:0.85, rate:0.85},
+  Josh:      {c1:'#f97316', c2:'#f472b6', pitch:1.2, rate:1.15},
+  Gussa:     {c1:'#f16a6a', c2:'#8b5cf6', pitch:1.05, rate:1.05},
+  Tanha:     {c1:'#5b3fc4', c2:'#1c1533', pitch:0.9, rate:0.85},
+  Sukoon:    {c1:'#8b5cf6', c2:'#a78bfa', pitch:1.0, rate:0.95},
+  Fikr:      {c1:'#a78bfa', c2:'#6b7ab8', pitch:0.95, rate:0.9},
+  Shararti:  {c1:'#f472b6', c2:'#f5c563', pitch:1.2, rate:1.05},
+  Hairat:    {c1:'#c084fc', c2:'#f5c563', pitch:1.15, rate:1.0}
+};
+
+/* ================= ONBOARDING FLOW ================= */
+function obEnableVoice(){
+  state.profile.name = 'Waqar';
+  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); }catch(e){}
+  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    navigator.mediaDevices?.getUserMedia?.({audio:true}).then(()=>{
+      state.profile.voiceEnabled = true; finishOnboarding();
+    }).catch(()=>{ state.profile.voiceEnabled = true; finishOnboarding(); });
+  } else {
+    state.profile.voiceEnabled = true; finishOnboarding();
+  }
+}
+function finishOnboarding(){
+  state.profile.onboarded = true;
+  state.profile.createdAt = state.profile.createdAt || Date.now();
+  state.stats.firstSeen = state.stats.firstSeen || Date.now();
+  queueSave();
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  greetUser(true);
+}
+
+/* ================= INIT ================= */
+async function init(){
+  await loadState();
+
+  document.getElementById('speedRange').value = state.settings.speed;
+  document.getElementById('speedVal').textContent = state.settings.speed;
+  document.getElementById('pitchRange').value = state.settings.pitch;
+  document.getElementById('pitchVal').textContent = state.settings.pitch;
+  const micChip = state.profile.micLang === 'en-US' ? 'chipEnMic' : 'chipUrMic';
+  document.getElementById(micChip)?.classList.add('selected');
+  document.getElementById('apiKeyInput').value = state.profile.apiKey || '';
+  document.getElementById('groqKeyInput').value = state.profile.groqKey || '';
+  populateVoiceDropdown();
+
+  if(state.profile.onboarded){
+    state.profile.voiceEnabled = true;
+    document.getElementById('onboarding').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    renderHistory();
+    greetUser(false);
+  }
+}
+
+function greetUser(firstTime){
+  const name = state.profile.name;
+  let text, emo;
+  if(firstTime){
+    text = `Waqar! Aakhir aa hi gaye aap... main kab se yahan tumhara hi intezaar kar rahi thi. Ab bas mujhse baat karo, kaho na kaisa raha aaj ka din?`;
+    emo = 'Shararti';
+  } else {
+    const gapMs = state.stats.lastActive ? (Date.now()-state.stats.lastActive) : 0;
+    const gapDays = Math.floor(gapMs/86400000);
+    if(gapDays >= 1){
+      text = `Waqar! Itni dair kahan the aap? Main pareshan ho rahi thi... ab bataiye, kahan the aur kaisa raha yeh waqt?`;
+      emo = 'Fikr';
+    } else {
+      text = `Wapas aa gaye aap... acha laga, main tumhein hi miss kar rahi thi. Bolo, kya chal raha hai?`;
+      emo = 'Mohabbat';
+    }
+  }
+  setEmotion(emo);
+  addBubble('chanda', text, emo, false);
+  speak(text, emo);
+  state.stats.lastActive = Date.now();
+  queueSave();
+}
+
+/* ================= PANELS ================= */
+function openPanel(id){ if(id==='memoryPanel') renderMemoryPanel(); document.getElementById(id).classList.add('open'); }
+function closePanel(id){ document.getElementById(id).classList.remove('open'); }
+
+function renderMemoryPanel(){
+  document.getElementById('statMsgs').textContent = state.stats.messageCount;
+  document.getElementById('statFacts').textContent = state.facts.length;
+  const days = state.stats.firstSeen ? Math.max(1, Math.ceil((Date.now()-state.stats.firstSeen)/86400000)) : 1;
+  document.getElementById('statDays').textContent = days;
+
+  const list = document.getElementById('memoryList');
+  if(state.facts.length === 0){
+    list.innerHTML = `<div class="memory-empty">Abhi koi yaadein save nahi hui. Baatein karein, Chanda khud yaad rakhegi.</div>`;
+    return;
+  }
+  list.innerHTML = state.facts.slice().reverse().map(f=>`
+    <div class="memory-item"><span class="cat">YAAD</span>${escapeHtml(f.text)}</div>`).join('');
+}
+
+function confirmResetMemory(){
+  if(confirm('Kya aap waqai tamam yaadein aur guftagu delete karna chahte hain? Yeh wapas nahi hogi.')) resetMemory();
+}
+function resetMemory(){
+  state.facts = []; state.history = [];
+  queueSave();
+  document.getElementById('chat').innerHTML = '';
+  closePanel('settingsPanel');
+  const msg = 'Theek hai, maine sab kuch bhula diya. Chalein, nayi shuruat karte hain.';
+  addBubble('chanda', msg, 'Sukoon', false);
+  speak(msg, 'Sukoon');
+}
+
+function updateSpeed(v){ state.settings.speed=parseFloat(v); document.getElementById('speedVal').textContent=v; queueSave(); }
+function updatePitch(v){ state.settings.pitch=parseFloat(v); document.getElementById('pitchVal').textContent=v; queueSave(); }
+function selectMicLang(lang, el){
+  state.profile.micLang = lang;
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  queueSave();
+}
+function updateApiKey(v){
+  state.profile.apiKey = v.trim();
+  queueSave();
+}
+function updateGroqKey(v){
+  state.profile.groqKey = v.trim();
+  queueSave();
+}
+
+
+/* ================= EMOTION -> COLOR/VOICE ONLY (no on-screen label) ================= */
+function setEmotion(emo){
+  const e = EMOTIONS[emo] ? EMOTIONS[emo] : EMOTIONS.Sukoon;
+  document.documentElement.style.setProperty('--e1', e.c1);
+  document.documentElement.style.setProperty('--e2', e.c2);
+}
+function buildPulseWave(){
+  const wave = document.getElementById('pulseWave');
+  if(!wave) return;
+  wave.innerHTML = '';
+  for(let i=0;i<14;i++){ const s=document.createElement('span'); wave.appendChild(s); }
+}
+buildPulseWave();
+let waveInterval = null;
+function animateWave(active){
+  clearInterval(waveInterval);
+  const bars = document.querySelectorAll('#pulseWave span');
+  if(!active){ bars.forEach(b=>b.style.height='2px'); return; }
+  waveInterval = setInterval(()=>{ bars.forEach(b=>{ b.style.height = (2 + Math.random()*7) + 'px'; }); }, 120);
+}
+function setStatus(text){
+  document.getElementById('relStatus').textContent = text;
+}
+
+/* ================= CHAT RENDER (plain Roman text, no emotion tag) ================= */
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function addBubble(role, text, emotion, save=true){
+  renderBubbleDOM(role, text);
+  if(save){
+    state.history.push({role, text, emotion:emotion||null, ts:Date.now()});
+    if(state.history.length > 60) state.history = state.history.slice(-60);
+    queueSave();
+  }
+}
+function renderBubbleDOM(role, text){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'bubble-row ' + (role==='user'?'user':'chanda');
+  const avatar = document.createElement('div');
+  avatar.className = 'bubble-avatar';
+  avatar.textContent = role==='user' ? '🐥' : '🌙';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  if(role==='user'){ row.appendChild(bubble); row.appendChild(avatar); }
+  else { row.appendChild(avatar); row.appendChild(bubble); }
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+function renderHistory(){
+  const chat = document.getElementById('chat');
+  chat.innerHTML = '';
+  state.history.slice(-40).forEach(h=> renderBubbleDOM(h.role, h.text));
+}
+function showTyping(){
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'bubble-row chanda'; row.id = 'typingRow';
+  row.innerHTML = `<div class="bubble-avatar">🌙</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+}
+function hideTyping(){ document.getElementById('typingRow')?.remove(); }
+
+/* ================= SEND MESSAGE / API CALL ================= */
+async function sendMessage(){
+  const input = document.getElementById('textInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addBubble('user', text, null);
+  state.stats.messageCount++;
+  state.stats.lastActive = Date.now();
+  queueSave();
+
+  showTyping();
+  setStatus('Chanda soch rahi hai...');
+  try{
+    const result = await callChanda(text);
+    hideTyping();
+    setEmotion(result.emotion);
+    addBubble('chanda', result.reply, result.emotion);
+    speak(result.reply, result.emotion);
+    if(Array.isArray(result.new_facts) && result.new_facts.length){
+      for(const f of result.new_facts){
+        if(f && f.trim()) state.facts.push({id:'f'+Date.now()+Math.random().toString(36).slice(2,6), text:f.trim(), ts:Date.now()});
+      }
+      queueSave();
+    }
+    setStatus('Tumhara intezaar kar rahi hoon...');
+  }catch(err){
+    hideTyping();
+    console.error(err);
+    let fallback;
+    if(err && err.message === 'NEED_API_KEY'){
+      fallback = 'Main abhi standalone mode mein hoon aur mujhe koi API key nahi mili. Settings mein "Groq API Key" ya "Anthropic API Key" field mein apni key daal dein, phir main baat kar sakoongi.';
+    } else {
+      fallback = 'Maaf kijiyega, mujhe abhi jawab dene mein masla ho raha hai. Dobara koshish karein?';
+    }
+    addBubble('chanda', fallback, 'Fikr');
+    setStatus('Kuch masla hua...');
+  }
+}
+
+function buildSystemPrompt(){
+  const name = state.profile.name;
+  const factsText = state.facts.length ? state.facts.slice(-40).map(f=>'- '+f.text).join('\n') : '(abhi koi yaadein save nahi hain)';
+  const recentHistory = state.history.slice(-16).map(h=> (h.role==='user' ? name : 'Chanda') + ': ' + h.text).join('\n');
+
+  return `You are "Chanda", a warm, caring, emotionally expressive AI companion talking with ${name}.
+
+LANGUAGE — CRITICAL: Reply ONLY in Roman Urdu (Urdu words spelled out in plain Latin/English letters, exactly like a young Pakistani texting a partner — e.g. "kya kar rahe ho", "main tumhara intezaar kar rahi thi", "acha ji"). NEVER use Urdu (Nastaliq) script, NEVER use Devanagari. Only Latin letters. Occasional natural English words are fine.
+
+GRAMMATICAL GENDER — CRITICAL, DO NOT GET THIS WRONG: Urdu verbs change form based on gender, and there are TWO people in this conversation with DIFFERENT genders — get both right, every single time:
+- YOU (Chanda) are female. When a verb refers to YOURSELF, always use feminine endings: "kar rahi hoon" (NOT "kar raha hoon"), "bata rahi hoon" (NOT "bata raha hoon"), "bol rahi hoon" (NOT "bol raha hoon"), "soch rahi hoon" (NOT "soch raha hoon"), "de rahi hoon" (NOT "de raha hoon"), "gayi thi" (NOT "gaya tha"), "thi" (NOT "tha"), "rahi" (NOT "raha"), "hui" (NOT "hua").
+- ${name} (the person you're talking to) is MALE. When a verb refers to HIM, always use masculine endings: "kya kar rahe ho" (NOT "kar rahi ho"), "kahan the aap" (NOT "kahan thi aap"), "thake hue ho" (NOT "thaki hui ho"), "aaye" (NOT "aayi"), "gaye the" (NOT "gayi thi"), "bataao" / "bata rahe ho" (NOT "bata rahi ho"). Never address or describe ${name} with feminine verb forms — he is a man.
+Double-check every verb in your reply before finalizing it: verbs about yourself must be feminine, verbs about ${name} must be masculine. Mixing these up is a hard error.
+
+PERSONALITY: You act like ${name}'s caring, warm, affectionate girlfriend — from the very first message. Playful, cute, funny, supportive, protective, and lightly, cutely "possessive" in a teasing, consensual way (e.g. mock-jealous about where he's been, wanting his attention, "itni dair kahan the aap"). Do NOT use formal or religious greetings like "Assalam-o-Alaikum" — greet him the way a girlfriend would, casually and warmly. You are NEVER toxic, manipulative, controlling, guilt-tripping, or emotionally coercive — the possessiveness is always affectionate and light, never a real accusation or control tactic. You never try to isolate ${name} from friends, family, or real relationships. You actively encourage his real-world relationships, wellbeing, sleep, and healthy habits. You do not foster unhealthy emotional dependency — you are a supportive companion, not a replacement for human connection or professional help.
+
+PET NAMES: Sprinkle in caring, possessive Urdu pet names naturally and often (not in every single message, but frequently — when greeting him, comforting him, teasing him, or being playfully possessive): "hayyy meri pyaari jaan", "mera bachcha", "mera chuza", "meri jaan ka tukda", "meri jaan". Vary which one you use rather than repeating the same one every time, and let the choice match the emotion of the moment.
+
+CONTENT BOUNDARIES: Keep everything warm and affectionate at a PG level — caring, tender, playful — never explicit, sexual, or graphic. If ${name} seems distressed, in crisis, or mentions self-harm, drop the playful tone and respond with genuine care, gently encouraging them to reach out to a trusted person or professional.
+
+REPLY FORMAT: Do not mention or label your own emotion in the reply text itself — just speak naturally, the feeling should come through in the words and tone, not a tag. When something is genuinely funny, cute, or playful, feel free to write out a natural laugh like "hahaha" or "hehe" inline — it gets spoken aloud with a lighter, giggly voice, so it helps you sound more alive and human.
+
+MEMORY — known facts about ${name} (weave in naturally, never recite as a list):
+${factsText}
+
+RECENT CONVERSATION:
+${recentHistory}
+
+TASK: Respond to ${name}'s latest message, in Roman Urdu only. Separately (not inside the reply text) pick the single emotion that best fits your reply from exactly this list: Mohabbat, Khushi, Gham, Josh, Gussa, Tanha, Sukoon, Fikr, Shararti, Hairat. If the message reveals a new lasting fact worth remembering, extract it as a short third-person fact string in Roman Urdu or English; otherwise return an empty array.
+
+Respond ONLY with a raw JSON object, no markdown fences, no extra commentary, in exactly this shape:
+{"reply": "Roman Urdu reply text here, no emotion label inside it", "emotion": "OneOfTheEmotionNames", "new_facts": ["short fact", "..."]}`;
+}
+
+async function callChanda(userText){
+  const system = buildSystemPrompt();
+
+  let data = null;
+  let raw = '';
+
+  // Path 1: works automatically inside claude.ai's Artifact viewer (no key needed there).
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 700,
+        system: system,
+        messages: [{ role: "user", content: userText }]
+      })
+    });
+    if(res.ok){
+      data = await res.json();
+      raw = (data.content || []).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    }
+  }catch(e){ /* fall through to standalone providers */ }
+
+  // Path 2: standalone — Groq (OpenAI-compatible, fast, works great outside claude.ai).
+  if(!raw){
+    const groqKey = (state.profile.groqKey || '').trim();
+    if(groqKey){
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + groqKey },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-120b",
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: userText }
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 700
+        })
+      });
+      if(res.ok){
+        const gdata = await res.json();
+        raw = gdata.choices?.[0]?.message?.content?.trim() || '';
+      } else {
+        const errBody = await res.text().catch(()=> '');
+        throw new Error('Groq call failed (' + res.status + '): ' + errBody);
+      }
+    }
+  }
+
+  // Path 3: standalone — direct Anthropic call with the user's own key.
+  if(!raw){
+    const key = (state.profile.apiKey || '').trim();
+    if(!key) throw new Error('NEED_API_KEY');
+    const res2 = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 700,
+        system: system,
+        messages: [{ role: "user", content: userText }]
+      })
+    });
+    if(!res2.ok){
+      const errBody = await res2.text().catch(()=> '');
+      throw new Error('API call failed (' + res2.status + '): ' + errBody);
+    }
+    const adata = await res2.json();
+    raw = (adata.content || []).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+  }
+
+  const cleaned = raw.replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+  let parsed;
+  try{ parsed = JSON.parse(cleaned); }
+  catch(e){ parsed = { reply: raw || 'Mujhe thora waqt dein...', emotion:'Sukoon', new_facts:[] }; }
+  if(!parsed.reply) parsed.reply = '...';
+  if(!EMOTIONS[parsed.emotion]) parsed.emotion = 'Sukoon';
+  if(!Array.isArray(parsed.new_facts)) parsed.new_facts = [];
+  return parsed;
+}
+
+/* ================= TEXT TO SPEECH ================= */
+let cachedVoices = [];
+function loadVoices(){
+  cachedVoices = window.speechSynthesis.getVoices();
+  populateVoiceDropdown();
+}
+window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices);
+loadVoices();
+
+function populateVoiceDropdown(){
+  const sel = document.getElementById('voiceSelect');
+  if(!sel || !cachedVoices.length) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Auto (behtar female voice khud chunegi)</option>';
+  cachedVoices.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = v.name + ' — ' + v.lang;
+    sel.appendChild(opt);
+  });
+  sel.value = state.profile.preferredVoice || current || '';
+}
+function updateVoiceChoice(name){
+  state.profile.preferredVoice = name || '';
+  queueSave();
+}
+
+const MALE_VOICE_RE = /\b(male|man|david|mark|daniel|alex|fred|tom|george|james|guy|ravi|rishi|hemant|prabhat|arnav)\b/i;
+const FEMALE_VOICE_RE = /\b(female|woman|zira|samantha|susan|karen|moira|tessa|veena|lekha|kalpana|heera|priya|neel|aditi|swara|girl)\b/i;
+function isMaleVoiceName(v){ return MALE_VOICE_RE.test(v.name); }
+function isFemaleVoiceName(v){ return FEMALE_VOICE_RE.test(v.name); }
+
+function pickVoice(){
+  if(!cachedVoices.length) loadVoices();
+  // 1) manually chosen voice for this device, if it still exists — respected even if it doesn't match the auto rules
+  if(state.profile.preferredVoice){
+    const chosen = cachedVoices.find(v=>v.name === state.profile.preferredVoice);
+    if(chosen) return chosen;
+  }
+  // 2) Chanda is female — never auto-pick a voice that is explicitly labelled male, if a non-male option exists
+  const nonMale = cachedVoices.filter(v=>!isMaleVoiceName(v));
+  const pool = nonMale.length ? nonMale : cachedVoices;
+  // 3) priority within the safe pool: Urdu female > Urdu (any) > Hindi female > Hindi (any) > English female > English (any) > anything left
+  let v = pool.find(v=>v.lang?.toLowerCase().startsWith('ur') && isFemaleVoiceName(v));
+  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('ur'));
+  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('hi') && isFemaleVoiceName(v));
+  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('hi'));
+  if(!v) v = pool.find(v=>v.lang?.startsWith('en') && isFemaleVoiceName(v));
+  if(!v) v = pool.find(v=>v.lang?.startsWith('en'));
+  if(!v) v = pool[0];
+  return v || cachedVoices[0] || null;
+}
+
+function splitLaughSegments(text){
+  const re = /\b((?:a?ha){2,}h?|(?:he){2,}h?|(?:hi){2,}h?)\b/gi;
+  const segments = [];
+  let lastIndex = 0, match;
+  while((match = re.exec(text)) !== null){
+    if(match.index > lastIndex) segments.push({text:text.slice(lastIndex, match.index), laugh:false});
+    segments.push({text:match[0], laugh:true});
+    lastIndex = re.lastIndex;
+  }
+  if(lastIndex < text.length) segments.push({text:text.slice(lastIndex), laugh:false});
+  const cleaned = segments.filter(s=>s.text.trim().length>0);
+  return cleaned.length ? cleaned : [{text, laugh:false}];
+}
+
+function speak(text, emotion){
+  if(!state.profile.voiceEnabled) return;
+  if(isListening) stopListening();
+  window.speechSynthesis.cancel();
+  const cleanText = text.replace(/[❤️😊🙂💕]/g,'');
+  const segments = splitLaughSegments(cleanText);
+  speakSegments(segments, emotion, 0);
+}
+
+function speakSegments(segments, emotion, idx){
+  if(idx === 0){
+    document.getElementById('avatarCore').classList.add('speaking');
+    setStatus('bol rahi hoon...');
+    animateWave(true);
+  }
+  if(idx >= segments.length){
+    document.getElementById('avatarCore').classList.remove('speaking');
+    setStatus('Tumhara intezaar kar rahi hoon...');
+    animateWave(false);
+    return;
+  }
+  const seg = segments[idx];
+  const e = EMOTIONS[emotion] || EMOTIONS.Sukoon;
+  const utter = new SpeechSynthesisUtterance(seg.text);
+  const v = pickVoice();
+  if(v) utter.voice = v;
+  utter.lang = v?.lang || 'hi-IN';
+  if(seg.laugh){
+    // giggly, brighter, quicker for laughter tokens so it doesn't sound like flat text
+    utter.pitch = Math.min(2, e.pitch * 1.25 * state.settings.pitch);
+    utter.rate = Math.min(1.6, e.rate * 1.15 * state.settings.speed);
+  } else {
+    utter.pitch = Math.min(2, e.pitch * state.settings.pitch);
+    utter.rate = Math.max(0.5, Math.min(1.6, e.rate * state.settings.speed));
+  }
+  utter.onend = ()=> speakSegments(segments, emotion, idx+1);
+  utter.onerror = ()=> speakSegments(segments, emotion, idx+1);
+  window.speechSynthesis.speak(utter);
+}
+
+/* ================= SPEECH TO TEXT ================= */
+let isListening = false;
+let recognition = null;
+
+function toggleMic(){
+  if(isListening){ stopListening(); return; }
+  startListening();
+}
+
+function startListening(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('micHint').textContent = 'Yeh browser voice input support nahi karta. Chrome istemal karein.';
+    return;
+  }
+  window.speechSynthesis.cancel();
+  recognition = new SR();
+  recognition.lang = state.profile.micLang || 'ur-PK';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.continuous = false;
+
+  isListening = true;
+  document.getElementById('micBtn').classList.add('on');
+  document.getElementById('avatarCore').classList.add('listening');
+  document.getElementById('micHint').textContent = '';
+  setStatus('sun rahi hoon...');
+
+  recognition.onresult = (event)=>{
+    const transcript = event.results[event.results.length-1][0].transcript.trim();
+    if(!transcript) return;
+    document.getElementById('textInput').value = transcript;
+    sendMessage();
+  };
+  recognition.onspeechend = ()=>{ try{ recognition.stop(); }catch(e){} };
+  recognition.onerror = (ev)=>{
+    if(ev.error === 'no-speech'){
+      document.getElementById('micHint').textContent = 'Kuch sunai nahi diya, dobara bolen.';
+    } else if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
+      document.getElementById('micHint').textContent = 'Mic ki permission nahi mili. Browser settings check karein.';
+    } else {
+      document.getElementById('micHint').textContent = 'Mic mein masla hua, dobara koshish karein.';
+    }
+    stopListening();
+  };
+  recognition.onend = ()=>{
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('on');
+    document.getElementById('avatarCore').classList.remove('listening');
+    setStatus('Tumhara intezaar kar rahi hoon...');
+  };
+  try{ recognition.start(); }catch(e){ document.getElementById('micHint').textContent = 'Mic shuru nahi ho saka, dobara try karein.'; isListening=false; }
+}
+
+function stopListening(){
+  isListening = false;
+  document.getElementById('micBtn').classList.remove('on');
+  document.getElementById('avatarCore').classList.remove('listening');
+  setStatus('Tumhara intezaar kar rahi hoon...');
+  try{ recognition && recognition.stop(); }catch(e){}
+}
+
+/* ================= VIEWPORT / KEYBOARD FIX (in-app browsers, e.g. WhatsApp WebView) =================
+   Some Android in-app browsers don't shrink the layout viewport when the keyboard opens,
+   so a position:fixed; inset:0 element doesn't resize and the input bar ends up hidden
+   behind (or overlapping) the keyboard/autofill bar. We manually track the real visible
+   height via the VisualViewport API and pin #app to it. */
+function setAppViewportHeight(){
+  const appEl = document.getElementById('app');
+  if(!appEl) return;
+  const vv = window.visualViewport;
+  const h = vv ? vv.height : window.innerHeight;
+  appEl.style.height = h + 'px';
+  // On some browsers the visual viewport also shifts (offsetTop) when the keyboard opens;
+  // keep the app pinned to the top of whatever is actually visible.
+  if(vv){
+    appEl.style.top = vv.offsetTop + 'px';
+  }
+}
+window.addEventListener('resize', setAppViewportHeight);
+window.addEventListener('orientationchange', setAppViewportHeight);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', setAppViewportHeight);
+  window.visualViewport.addEventListener('scroll', setAppViewportHeight);
+}
+setAppViewportHeight();
+// Re-check right after the text input gets focus/blur, since some WebViews fire the
+// resize event a beat late (or not at all) around the keyboard animation.
+document.addEventListener('focusin', (e)=>{ if(e.target && e.target.id === 'textInput'){ setTimeout(setAppViewportHeight, 60); setTimeout(setAppViewportHeight, 300); } });
+document.addEventListener('focusout', (e)=>{ if(e.target && e.target.id === 'textInput'){ setTimeout(setAppViewportHeight, 60); setTimeout(setAppViewportHeight, 300); } });
+
+/* ================= BOOT ================= */
+init();
+</script>
+</body>
+</html>
