@@ -3,942 +3,1402 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-<title>Chanda 🌙</title>
+<meta name="theme-color" content="#141522">
+<title>Chanda</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chanda">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  @property --halo{syntax:'<color>'; inherits:true; initial-value:rgba(230,225,210,.35);}
   :root{
-    --bg:#0b0814;
-    --bg2:#140f24;
-    --purple:#8b5cf6;
-    --purple-light:#a78bfa;
-    --purple-deep:#5b3fc4;
-    --pink:#f472b6;
-    --gold:#f5c563;
-    --text:#f2eefb;
-    --muted:#8f86ab;
-    --glass:rgba(255,255,255,0.045);
-    --glass-border:rgba(255,255,255,0.09);
-    --danger:#f16a6a;
+    --bg:#141522;
+    --panel:#1d1e2b;
+    --her:#282a3b;
+    --me:#3c4173;
+    --text:#ececf2;
+    --muted:#8d8da2;
+    --faint:#5f5f73;
+    --line:rgba(255,255,255,.09);
+    --accent:#e6d3a3;
+    --danger:#e57b86;
+    --halo:rgba(230,225,210,.35);
+    --moon:url(moon.jpg) center/cover no-repeat, radial-gradient(circle at 38% 35%, #ecebe6, #9a9994 70%, #6d6c68);
+    transition:--halo 1.2s ease;
+    color-scheme:dark;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
-    margin:0; background:radial-gradient(120% 120% at 15% 0%, #180f2c 0%, var(--bg) 55%, #050309 100%);
-    color:var(--text); font-family:'Poppins',sans-serif; overflow:hidden;
-    min-height:100vh; min-height:100dvh;
+    margin:0; color:var(--text);
+    background:radial-gradient(120% 70% at 50% -10%, #24263a 0%, var(--bg) 65%);
+    font:15px/1.5 'Inter',system-ui,-apple-system,sans-serif; overflow:hidden;
+    min-height:100vh; min-height:100dvh; -webkit-font-smoothing:antialiased;
   }
-  ::selection{background:var(--purple-deep); color:#fff;}
+  button{font-family:inherit; color:inherit;}
+  ::selection{background:rgba(230,211,163,.3);}
   ::-webkit-scrollbar{width:6px;}
-  ::-webkit-scrollbar-thumb{background:var(--purple-deep); border-radius:10px;}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12); border-radius:10px;}
+  [hidden]{display:none !important;}
+  #sky{position:fixed; inset:0; z-index:0; pointer-events:none;}
 
-  .ambient{position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none;}
-  .orb{position:absolute; border-radius:50%; filter:blur(70px); opacity:.3; animation:float 16s ease-in-out infinite;}
-  .orb1{width:340px; height:340px; background:var(--purple); top:-100px; left:-80px;}
-  .orb2{width:260px; height:260px; background:var(--pink); bottom:-80px; right:-60px; animation-delay:-5s;}
-  .orb3{width:200px; height:200px; background:var(--gold); top:40%; left:60%; opacity:.15; animation-delay:-10s;}
-  @keyframes float{0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(30px,-24px) scale(1.08);}}
-
-  #app{position:fixed; inset:0; z-index:1; display:flex; flex-direction:column; height:100%;}
-
-  /* ---------- DESKTOP / WIDE SCREENS: centered app shell, not full-bleed ---------- */
-  @media (min-width: 720px){
-    body{overflow:auto;}
-    #app{
-      left:50%; right:auto; transform:translateX(-50%);
-      width:100%; max-width:620px;
-      border-left:1px solid var(--glass-border); border-right:1px solid var(--glass-border);
-      box-shadow:0 0 90px rgba(139,92,246,.12);
-      background:rgba(11,8,20,.35); backdrop-filter:blur(6px);
-    }
-  }
+  /* ---------- MOON ---------- */
+  .moon{border-radius:50%; background:var(--moon); flex-shrink:0; position:relative;
+    box-shadow:0 0 0 1px rgba(255,255,255,.04), 0 0 22px 2px var(--halo), inset -6px -6px 14px rgba(0,0,0,.45);
+    transition:filter 1.2s ease;}
+  .moon.talking{animation:talk 1.1s ease-in-out infinite;}
+  @keyframes talk{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.04), 0 0 16px 1px var(--halo), inset -6px -6px 14px rgba(0,0,0,.45);} 50%{box-shadow:0 0 0 1px rgba(255,255,255,.04), 0 0 30px 6px var(--halo), inset -6px -6px 14px rgba(0,0,0,.45);}}
+  .moon.listening::after{content:''; position:absolute; inset:-5px; border-radius:50%; border:2px solid var(--accent); animation:ring 1.3s ease-out infinite;}
+  @keyframes ring{from{transform:scale(.9); opacity:.9;} to{transform:scale(1.35); opacity:0;}}
+  /* realistic crescent: real moon photo with the earth's shadow over it */
+  .crescent{position:relative; overflow:hidden; border-radius:50%; background:var(--moon); filter:brightness(1.45) contrast(1.05);
+    box-shadow:0 0 10px rgba(230,225,210,.12);}
+  .crescent::after{content:''; position:absolute; inset:-1px; border-radius:50%;
+    background:radial-gradient(circle at 80% 36%, rgba(12,12,20,.96) 0 46%, rgba(12,12,20,.6) 56%, transparent 64%);}
+  /* if chanda-avatar.png is uploaded, it replaces the photo crescent (see probe in script) */
+  .has-moon-avatar .crescent{background:url(chanda-avatar.png) center/cover no-repeat, #3a3a4f; filter:none;}
+  .has-moon-avatar .crescent::after{display:none;}
+  .chuza{background:url(chuza-avatar.png) center/cover no-repeat, #3a3a4f;}
 
   /* ---------- ONBOARDING ---------- */
-  #onboarding{
-    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
-    background:radial-gradient(120% 120% at 50% 0%, #1c1436 0%, #08060f 70%); padding:24px;
-  }
-  .ob-card{
-    width:100%; max-width:420px; background:var(--glass); border:1px solid var(--glass-border);
-    backdrop-filter:blur(20px); border-radius:28px; padding:38px 30px; text-align:center;
-    box-shadow:0 30px 80px rgba(139,92,246,.15);
-  }
-  .ob-orb{
-    width:70px; height:70px; margin:0 auto 20px; border-radius:50%; position:relative;
-    background:#1c1533; border:1px solid var(--glass-border);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 0 40px rgba(139,92,246,.35);
-    animation:pulse 3s ease-in-out infinite;
-  }
-  .ob-orb svg{width:30px; height:30px;}
-  @keyframes pulse{0%,100%{box-shadow:0 0 30px rgba(139,92,246,.3);} 50%{box-shadow:0 0 55px rgba(244,114,182,.4);}}
-  .ob-title{font-size:24px; font-weight:600; margin:0 0 6px;}
-  .ob-sub{color:var(--muted); font-size:13.5px; margin:0 0 26px;}
-  .ob-step{display:none;}
-  .ob-step.active{display:block; animation:fadeUp .4s ease;}
-  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
-  .ob-input{
-    width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--glass-border);
-    background:rgba(255,255,255,.04); color:var(--text); font-size:15px; margin-bottom:14px; outline:none;
-    font-family:'Poppins',sans-serif;
-  }
-  .ob-input:focus{border-color:var(--purple);}
-  .btn{
-    width:100%; padding:14px; border-radius:14px; border:none; cursor:pointer;
-    background:linear-gradient(135deg, var(--purple), var(--pink)); color:#fff; font-weight:600; font-size:15px;
-    font-family:'Poppins',sans-serif; transition:transform .15s ease, box-shadow .15s ease;
-  }
-  .btn:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(139,92,246,.35);}
-  .btn:active{transform:translateY(0);}
-  .btn.ghost{background:transparent; border:1px solid var(--glass-border); color:var(--muted); margin-top:10px;}
-  .ob-choices{display:flex; gap:10px; margin-bottom:16px;}
-  .chip{
-    flex:1; padding:12px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,.03);
-    color:var(--muted); cursor:pointer; font-size:13px; text-align:center; transition:.2s;
-  }
-  .chip.selected{border-color:var(--purple); background:rgba(139,92,246,.15); color:#fff;}
-  .ob-note{font-size:11px; color:var(--muted); margin-top:16px; line-height:1.6;}
-
-  /* ---------- HEADER ---------- */
-  header{
-    display:flex; align-items:center; justify-content:space-between; padding:calc(14px + env(safe-area-inset-top, 0px)) 18px 14px;
-    border-bottom:1px solid var(--glass-border); backdrop-filter:blur(10px); flex-shrink:0;
-  }
-  .brand{display:flex; align-items:center; gap:12px;}
-  .brand-text{display:flex; flex-direction:column;}
-
-  /* mini animated orb, lives in the header (not a fixed block in the chat area) */
-  .avatar-wrap-mini{position:relative; width:40px; height:40px; flex-shrink:0;}
-  .avatar-ring-mini{
-    position:absolute; inset:0; border-radius:50%;
-    background:conic-gradient(from 0deg, var(--e1,var(--purple)), var(--e2,var(--pink)), var(--e1,var(--purple)));
-    animation:spin 10s linear infinite; filter:blur(.5px);
-  }
+  #onboarding{position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .ob{width:100%; max-width:360px; text-align:center; animation:rise .9s cubic-bezier(.2,.8,.2,1);}
+  @keyframes rise{from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;}}
+  .ob .moon{width:180px; height:180px; margin:0 auto 34px; box-shadow:0 0 70px 8px rgba(230,225,210,.18), inset -14px -14px 34px rgba(0,0,0,.55); animation:spin 240s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .brand-orb{
-    position:absolute; inset:3px; border-radius:50%; background:#1c1533; border:1px solid var(--glass-border);
-    display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 10px rgba(0,0,0,.4);
-    transition:box-shadow .6s ease; font-size:16px;
+  .brandname{font-family:'Outfit','Inter',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.16em;}
+  .ob h1{font-size:38px; margin:0 0 0 .22em; line-height:1; letter-spacing:.22em;}
+  .ob p{color:var(--muted); margin:10px 0 36px;}
+  .btn{
+    width:100%; padding:14px 18px; border-radius:14px; border:none; cursor:pointer; font-weight:600; font-size:15px;
+    background:var(--accent); color:#1a1710; transition:transform .15s ease, opacity .15s;
   }
-  .brand-orb.speaking{animation:speak-pulse 1.1s ease-in-out infinite;}
-  .brand-orb.listening{animation:listen-pulse 1.4s ease-in-out infinite;}
-  @keyframes speak-pulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.08);}}
-  @keyframes listen-pulse{0%,100%{box-shadow:inset 0 0 10px rgba(0,0,0,.4), 0 0 0 rgba(244,114,182,0);} 50%{box-shadow:inset 0 0 10px rgba(0,0,0,.4), 0 0 14px rgba(244,114,182,.6);}}
-  .brand-orb svg{width:16px; height:16px;}
+  .btn:hover{opacity:.92;} .btn:active{transform:scale(.99);}
+  .btn.soft{background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--text); font-weight:500;}
+  .btn.danger{background:transparent; border:1px solid rgba(229,123,134,.4); color:var(--danger); font-weight:500;}
+  .btn + .btn{margin-top:8px;}
 
-  .brand h1{font-size:16px; margin:0; font-weight:600;}
-  .brand span{font-size:11px; color:var(--muted); display:block; margin-top:1px;}
-  .pulse-wave-mini{display:flex; align-items:center; gap:2px; height:9px; margin-top:3px;}
-  .pulse-wave-mini span{
-    width:2px; border-radius:2px; background:linear-gradient(180deg, var(--e1,var(--purple)), var(--e2,var(--pink)));
-    height:2px; transition:height .18s ease;
+  /* ---------- APP ---------- */
+  #app{position:fixed; left:0; right:0; top:0; height:100%; z-index:1; display:flex; flex-direction:column;}
+  header{
+    display:flex; align-items:center; gap:12px; flex-shrink:0;
+    padding:calc(10px + env(safe-area-inset-top, 0px)) 12px 10px 16px;
+    background:rgba(20,21,34,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
   }
-  .head-actions{display:flex; gap:8px;}
-  .icon-btn{
-    width:36px; height:36px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass);
-    color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px;
-    transition:.2s;
-  }
-  .icon-btn:hover{color:#fff; border-color:var(--purple);}
-  .icon-btn.active{color:var(--pink); border-color:var(--pink); background:rgba(244,114,182,.12);}
-
-  /* ---------- MAIN ---------- */
-  main{flex:1; display:flex; flex-direction:column; min-height:0;}
+  header .moon{width:42px; height:42px; box-shadow:0 0 16px 1px var(--halo); background-color:#000;}
+  header .moon::before{content:''; position:absolute; inset:0; border-radius:50%; background:var(--moon); filter:brightness(1.3);}
+  .who{flex:1; min-width:0;}
+  .who h1{margin:0; font-size:17px; line-height:1.1;}
+  .status{font-size:12.5px; color:var(--muted); margin-top:3px; display:flex; align-items:center; gap:6px;}
+  .status .dot{width:6px; height:6px; border-radius:50%; background:#6fcf97;}
+  .icon-btn{width:34px; height:34px; border-radius:10px; border:none; background:transparent; color:var(--muted);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s; flex-shrink:0;}
+  .icon-btn svg{width:19px; height:19px;}
+  .icon-btn:hover{color:var(--text); background:rgba(255,255,255,.06);}
 
   /* ---------- CHAT ---------- */
-  #chat{flex:1; overflow-y:auto; padding:12px 16px 8px; display:flex; flex-direction:column; gap:10px; min-height:0;}
-  .bubble-row{display:flex; width:100%; align-items:flex-end; gap:6px;}
-  .bubble-row.user{justify-content:flex-end;}
-  .bubble-row.chanda{justify-content:flex-start;}
-  .bubble-avatar{
-    width:44px; height:44px; border-radius:50%; background:var(--glass); border:1px solid var(--glass-border);
-    display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;
-  }
-  .bubble{
-    max-width:78%; padding:11px 15px; border-radius:18px; font-size:14.5px; line-height:1.5;
-    animation:popin .25s ease; word-wrap:break-word;
-  }
-  @keyframes popin{from{opacity:0; transform:translateY(6px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);}}
-  .bubble-row.user .bubble{background:linear-gradient(135deg, rgba(139,92,246,.4), rgba(244,114,182,.28)); border:1px solid rgba(255,255,255,.1); border-bottom-right-radius:5px;}
-  .bubble-row.chanda .bubble{background:var(--glass); border:1px solid var(--glass-border); border-bottom-left-radius:5px;}
-  .typing{display:flex; gap:4px; padding:5px 3px;}
-  .typing span{width:6px; height:6px; border-radius:50%; background:var(--purple-light); animation:tdot 1.2s infinite;}
-  .typing span:nth-child(2){animation-delay:.2s;} .typing span:nth-child(3){animation-delay:.4s;}
-  @keyframes tdot{0%,60%,100%{opacity:.3; transform:translateY(0);} 30%{opacity:1; transform:translateY(-4px);}}
+  #chat{flex:1; overflow-y:auto; overscroll-behavior:contain; padding:10px 12px 8px; min-height:0; scroll-behavior:smooth;}
+  #chat.instant{scroll-behavior:auto;}
+  .load-more{display:block; margin:6px auto 12px; padding:6px 14px; border-radius:20px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:12.5px; cursor:pointer;}
+  .day{text-align:center; margin:16px 0 8px;}
+  .day span{font-size:11.5px; color:var(--muted); padding:3px 10px; border-radius:8px; background:rgba(255,255,255,.04);}
+  .row{display:flex; align-items:flex-end; gap:8px; margin-top:10px; animation:pop .28s ease-out;}
+  .row.same{margin-top:3px;}
+  .row.user{flex-direction:row-reverse;}
+  @keyframes pop{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .av{width:40px; height:40px; border-radius:50%; flex-shrink:0;}
+  .row.more-follows .av{visibility:hidden;}
+  .bubble{position:relative; max-width:min(78%, 540px); padding:9px 13px 7px; font-size:15.5px; line-height:1.55; word-wrap:break-word; white-space:pre-wrap;}
+  .row.chanda .bubble{background:var(--her); border:1px solid var(--line); border-radius:18px 18px 18px 5px;}
+  .row.user .bubble{background:var(--me); border-radius:18px 18px 5px 18px;}
+  .row.more-follows.chanda .bubble{border-bottom-left-radius:18px;}
+  .row.more-follows.user .bubble{border-bottom-right-radius:18px;}
+  .meta{display:block; font-size:10.5px; color:rgba(236,236,242,.42); margin-top:2px; text-align:right;}
+  .react{position:absolute; bottom:-11px; left:-6px; font-size:13px; line-height:1; padding:3px 4px; border-radius:20px;
+    background:var(--panel); border:1px solid var(--line); animation:reactIn .45s cubic-bezier(.3,1.6,.5,1);}
+  .row.has-react{margin-bottom:9px;}
+  @keyframes reactIn{from{transform:scale(0);} to{transform:none;}}
+  .typing{display:flex; gap:4px; padding:7px 2px 5px;}
+  .typing span{width:6px; height:6px; border-radius:50%; background:var(--muted); animation:tdot 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.18s;} .typing span:nth-child(3){animation-delay:.36s;}
+  @keyframes tdot{0%,60%,100%{opacity:.35; transform:translateY(0);} 30%{opacity:1; transform:translateY(-4px);}}
+  .err-action{margin:6px 0 0 48px; font-size:12.5px; padding:6px 12px; border-radius:20px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text); cursor:pointer;}
 
-  /* ---------- INPUT BAR ---------- */
-  .inputbar{display:flex; align-items:center; gap:10px; padding:10px 16px calc(16px + env(safe-area-inset-bottom, 0px)); flex-shrink:0; border-top:1px solid var(--glass-border);}
-  #textInput{
-    flex:1; padding:12px 16px; border-radius:22px; border:1px solid var(--glass-border);
-    background:var(--glass); color:var(--text); font-size:16px; outline:none; font-family:'Poppins',sans-serif;
-  }
-  #textInput:focus{border-color:var(--purple);}
-  .round-btn{
-    width:44px; height:44px; border-radius:50%; border:none; cursor:pointer; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:17px; color:#fff;
-    background:linear-gradient(135deg, var(--purple), var(--pink)); transition:.2s;
-  }
-  .round-btn:active{transform:scale(.92);}
-  .round-btn.mic.on{background:linear-gradient(135deg, var(--danger), var(--pink)); animation:mic-glow 1s infinite;}
-  @keyframes mic-glow{0%,100%{box-shadow:0 0 0 rgba(241,106,106,.5);} 50%{box-shadow:0 0 20px rgba(241,106,106,.6);}}
-  .mic-hint{font-size:10.5px; color:var(--muted); text-align:center; padding-bottom:2px; min-height:14px;}
+  .brandname{display:flex; align-items:center;}
+  .ob h1.brandname{justify-content:center;}
+  .ob .crescent-emoji{margin-left:0;}
+  .crescent-emoji{width:1.25em; height:1.25em; margin-left:.3em; object-fit:contain; filter:drop-shadow(0 0 6px rgba(230,225,210,.35));}
 
-  /* ---------- PANELS ---------- */
-  .panel-overlay{position:fixed; inset:0; z-index:40; background:rgba(6,4,12,.65); backdrop-filter:blur(4px); display:none; align-items:flex-end; justify-content:center;}
-  .panel-overlay.open{display:flex; animation:fadein .2s ease;}
-  @keyframes fadein{from{opacity:0;} to{opacity:1;}}
-  .panel{width:100%; max-width:480px; max-height:82vh; overflow-y:auto; background:var(--bg2); border:1px solid var(--glass-border); border-bottom:none; border-radius:26px 26px 0 0; padding:24px 22px 30px; animation:slideup .3s ease;}
-  @keyframes slideup{from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;}}
-  .panel h2{margin:0 0 18px; font-size:17px; display:flex; align-items:center; justify-content:space-between;}
-  .panel h2 .close{cursor:pointer; color:var(--muted); font-size:20px;}
-  .field{margin-bottom:18px;}
-  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:8px;}
-  input[type=range]{width:100%; accent-color:var(--purple);}
-  .memory-item{background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:11px 14px; margin-bottom:8px; font-size:13px;}
-  .memory-item .cat{font-size:9.5px; color:var(--pink); margin-bottom:4px; display:block; letter-spacing:.4px;}
-  .memory-empty{color:var(--muted); font-size:13px; text-align:center; padding:30px 10px;}
-  .danger-btn{background:rgba(241,106,106,.12); color:var(--danger); border:1px solid rgba(241,106,106,.3);}
-  .rel-stats{display:flex; gap:10px; margin-bottom:20px;}
-  .stat-card{flex:1; background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:14px; text-align:center;}
-  .stat-card .num{font-size:19px; font-weight:600; background:linear-gradient(135deg,var(--purple-light),var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .stat-card .lbl{font-size:10px; color:var(--muted); margin-top:4px;}
+  /* ---------- COMPOSER ---------- */
+  .emoji-toggle{width:36px; height:40px; border:none; background:none; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-left:-8px;}
+  .emoji-toggle svg{width:22px; height:22px;}
+  .emoji-toggle:hover, .emoji-toggle.on{color:var(--accent);}
+  #emojiPanel{flex-shrink:0; height:260px; display:flex; flex-direction:column; background:var(--panel); border-top:1px solid var(--line); animation:slideUp .18s ease-out;}
+  @keyframes slideUp{from{transform:translateY(20px); opacity:0;} to{transform:none; opacity:1;}}
+  .emoji-cats{display:flex; align-items:center; gap:2px; padding:6px 8px; border-bottom:1px solid var(--line);}
+  .emoji-cat{flex:1; height:34px; border:none; border-radius:8px; background:none; cursor:pointer; font-size:19px; opacity:.5; transition:.15s;}
+  .emoji-cat.sel{opacity:1; background:rgba(255,255,255,.07);}
+  .emoji-del{width:40px; height:34px; border:none; background:none; color:var(--muted); cursor:pointer; font-size:18px; flex-shrink:0;}
+  .emoji-grid{flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(42px, 1fr)); align-content:start; padding:6px 8px 10px;}
+  .emoji-grid button{height:42px; border:none; background:none; border-radius:10px; font-size:26px; cursor:pointer; line-height:1; transition:transform .1s;}
+  .emoji-grid button:hover{background:rgba(255,255,255,.07);}
+  .emoji-grid button:active{transform:scale(1.25);}
+  .emoji-empty{grid-column:1/-1; color:var(--muted); font-size:13px; text-align:center; padding:30px 0;}
+  .mic-hint{font-size:12px; color:var(--muted); text-align:center;}
+  .mic-hint:not(:empty){padding:2px 12px 4px;}
+  .composer{flex-shrink:0; display:flex; align-items:flex-end; gap:8px; padding:8px 12px calc(12px + env(safe-area-inset-bottom, 0px));}
+  .field-pill{flex:1; display:flex; align-items:flex-end; min-height:46px; border-radius:23px; padding:3px 3px 3px 16px;
+    background:var(--panel); border:1px solid var(--line); transition:border-color .2s;}
+  .field-pill:focus-within{border-color:rgba(230,211,163,.35);}
+  #textInput{flex:1; resize:none; border:none; outline:none; background:transparent; color:var(--text);
+    font:16px/1.4 'Inter',system-ui,sans-serif; padding:10px 0; max-height:120px; min-height:24px;}
+  #textInput::placeholder{color:var(--faint);}
+  .send{width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:var(--accent); color:#1a1710; transition:transform .15s, opacity .2s;}
+  .send svg{width:18px; height:18px; margin-left:2px;}
+  .send:disabled{opacity:.25; cursor:default;}
+  .send:not(:disabled):active{transform:scale(.9);}
+  .mic{width:46px; height:46px; border-radius:50%; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); background:var(--panel); color:var(--text); transition:.2s;}
+  .mic svg{width:20px; height:20px;}
+  .mic.on{background:var(--danger); border-color:transparent; animation:micglow 1.2s infinite;}
+  @keyframes micglow{0%,100%{box-shadow:0 0 0 0 rgba(229,123,134,.45);} 50%{box-shadow:0 0 0 9px rgba(229,123,134,0);}}
 
-  /* ---------- SMALL PHONE SCREENS ---------- */
-  @media (max-width: 380px){
-    .brand h1{font-size:15px;}
-    .brand span{font-size:10px;}
-    .icon-btn{width:34px; height:34px; font-size:14px;}
-    .avatar-wrap-mini{width:34px; height:34px;}
-    #chat{padding:10px 12px 6px; gap:8px;}
-    .bubble{max-width:82%; padding:10px 13px; font-size:14px;}
-    .bubble-avatar{width:36px; height:36px; font-size:19px;}
-    .inputbar{padding:8px 12px calc(14px + env(safe-area-inset-bottom, 0px)); gap:8px;}
-    #textInput{padding:11px 14px;}
-    .round-btn{width:40px; height:40px; font-size:16px;}
-    .ob-card{padding:30px 22px;}
-    .panel{padding:20px 16px 24px;}
+  #toast{position:fixed; left:50%; bottom:calc(86px + env(safe-area-inset-bottom,0px)); transform:translate(-50%,16px); z-index:70; opacity:0; pointer-events:none;
+    background:#22222e; border:1px solid var(--line); padding:9px 15px; border-radius:12px; font-size:13.5px; transition:.25s; max-width:calc(100% - 32px);}
+  #toast.show{opacity:1; transform:translate(-50%,0);}
+
+  /* ---------- SETTINGS SHEET ---------- */
+  .sheet-wrap{position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.55); display:none; align-items:flex-end; justify-content:center;}
+  .sheet-wrap.open{display:flex; animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0;} to{opacity:1;}}
+  .sheet{width:100%; max-width:540px; max-height:90vh; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-bottom:none;
+    border-radius:22px 22px 0 0; padding:8px 18px calc(24px + env(safe-area-inset-bottom,0px)); animation:up .3s cubic-bezier(.2,.9,.3,1);}
+  .sheet::before{content:''; display:block; width:36px; height:4px; border-radius:4px; background:rgba(255,255,255,.15); margin:0 auto 12px;}
+  @keyframes up{from{transform:translateY(50px); opacity:0;} to{transform:none; opacity:1;}}
+  .sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .sheet-head h2{margin:0; font-size:19px; font-weight:600;}
+  .tabs{display:flex; gap:4px; padding:4px; background:rgba(255,255,255,.04); border-radius:12px; margin-bottom:16px;}
+  .tab{flex:1; padding:8px; border:none; border-radius:9px; background:transparent; color:var(--muted); font-size:13.5px; font-weight:500; cursor:pointer;}
+  .tab.sel{background:rgba(255,255,255,.09); color:var(--text);}
+  .section{margin-bottom:22px;}
+  .section h3{font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 10px;}
+  .lbl{display:flex; justify-content:space-between; gap:10px; font-size:13.5px; margin:0 0 6px;}
+  .lbl small{color:var(--muted); font-size:12px;}
+  .inp{width:100%; padding:11px 13px; border-radius:11px; border:1px solid var(--line); background:rgba(0,0,0,.25);
+    color:var(--text); font:14px 'Inter',sans-serif; outline:none; margin-bottom:14px;}
+  .inp:focus{border-color:rgba(230,211,163,.45);}
+  .note{font-size:12.5px; color:var(--muted); line-height:1.55; margin:10px 0 0;}
+  #testResult{font-size:13px; margin-top:10px;}
+  #testResult.ok{color:#8fd9ae;} #testResult.bad{color:#f0a3ab;}
+  details{margin:0 0 12px;}
+  summary{cursor:pointer; font-size:13.5px; color:var(--muted); padding:2px 0 12px;}
+  input[type=range]{width:100%; accent-color:var(--accent); margin:0 0 14px;}
+  .chips{display:flex; gap:8px;}
+  .chip{flex:1; padding:9px; border-radius:10px; border:1px solid var(--line); color:var(--muted); cursor:pointer; font-size:13.5px; text-align:center;}
+  .chip.sel{border-color:rgba(230,211,163,.6); color:var(--text); background:rgba(230,211,163,.08);}
+  .switch-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; font-size:14px;}
+  .switch{position:relative; width:44px; height:26px; border-radius:26px; background:rgba(255,255,255,.14); border:none; cursor:pointer; transition:.2s;}
+  .switch::after{content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s;}
+  .switch.on{background:#7bb58f;}
+  .switch.on::after{transform:translateX(18px);}
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:20px;}
+  .stat{background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px; padding:12px 6px; text-align:center;}
+  .stat .n{font-size:20px; font-weight:600;}
+  .stat .l{font-size:11.5px; color:var(--muted);}
+  .mem{display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px; line-height:1.45;}
+  .mem .t{flex:1;}
+  .mem .del{border:none; background:none; color:var(--faint); cursor:pointer; font-size:13px; padding:2px;}
+  .mem .del:hover{color:var(--danger);}
+  .story{font-size:14px; line-height:1.6; color:#d6d6e0; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px; padding:12px 14px; white-space:pre-wrap;}
+  .empty{color:var(--muted); font-size:13.5px; padding:6px 0;}
+  .credit{font-size:11px; color:var(--faint); text-align:center; margin-top:18px;}
+  .credit a{color:inherit;}
+
+  @media (min-width: 820px){
+    #app{left:50%; right:auto; width:760px; transform:translateX(-50%); border-left:1px solid var(--line); border-right:1px solid var(--line); background:rgba(24,25,39,.6);}
+    .sheet-wrap{align-items:center;}
+    .sheet{border-radius:20px; border-bottom:1px solid var(--line);}
+    .sheet::before{display:none;}
   }
-  @media (max-width: 340px){
-    .bubble{font-size:13.5px;}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001s !important; animation-iteration-count:1 !important; transition-duration:.001s !important;}
   }
 </style>
 </head>
 <body>
 
-<div class="ambient"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+<canvas id="sky"></canvas>
 
 <!-- ONBOARDING -->
 <div id="onboarding">
-  <div class="ob-card">
-    <div class="ob-orb">🌙</div>
-
-    <div class="ob-step active" data-step="1">
-      <div class="ob-title">Chanda</div>
-      <div class="ob-sub">Apki Pyari Chanda 🌙</div>
-      <button class="btn" onclick="obEnableVoice()">Shuru karein</button>
-    </div>
-
+  <div class="ob">
+    <div class="moon"></div>
+    <h1 class="brandname">Chanda<img class="crescent-emoji" src="crescent.png" alt=""></h1>
+    <p>Always here, every night.</p>
+    <button class="btn" onclick="startApp()">Start</button>
   </div>
 </div>
 
-<div id="app" style="display:none;">
+<div id="app" hidden>
   <header>
-    <div class="brand">
-      <div class="avatar-wrap-mini">
-        <div class="avatar-ring-mini"></div>
-        <div class="brand-orb" id="avatarCore">🌙</div>
-      </div>
-      <div class="brand-text">
-        <h1>Chanda</h1>
-        <span id="relStatus">Tumhara intezaar kar rahi thi...</span>
-        <div class="pulse-wave-mini" id="pulseWave"></div>
-      </div>
+    <div class="moon" id="headMoon"></div>
+    <div class="who">
+      <h1 class="brandname">Chanda<img class="crescent-emoji" src="crescent.png" alt=""></h1>
+      <div class="status"><span class="dot"></span><span id="statusText">online</span></div>
     </div>
-    <div class="head-actions">
-      <div class="icon-btn" onclick="openPanel('settingsPanel')" title="Settings">⚙️</div>
-    </div>
+    <button class="icon-btn" id="voiceBtn" onclick="toggleVoice()" title="Voice replies"></button>
+    <button class="icon-btn" onclick="openSettings()" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
   </header>
 
-  <main>
-    <div id="chat"></div>
+  <div id="chat">
+    <button class="load-more" id="loadMore" onclick="loadMore()" hidden>Load earlier messages</button>
+    <div id="msgs"></div>
+  </div>
 
-    <div class="mic-hint" id="micHint"></div>
-    <div class="inputbar">
-      <button class="round-btn mic" id="micBtn" onclick="toggleMic()">🎙️</button>
-
-      <input id="textInput" placeholder="Yahan likhein..." onkeydown="if(event.key==='Enter')sendMessage()">
-      <button class="round-btn" onclick="sendMessage()">➤</button>
+  <div class="mic-hint" id="micHint"></div>
+  <div class="composer">
+    <button class="mic" id="micBtn" onclick="toggleMic()" aria-label="Voice input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    </button>
+    <div class="field-pill">
+      <button class="emoji-toggle" id="emojiBtn" onclick="toggleEmoji()" aria-label="Emoji"></button>
+      <textarea id="textInput" rows="1" placeholder="Message Chanda…" enterkeyhint="send"></textarea>
+      <button class="send" id="sendBtn" onclick="sendMessage()" disabled aria-label="Send">
+        <svg viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-2.5-6.5z" fill="currentColor"/></svg>
+      </button>
     </div>
-  </main>
+  </div>
+  <div id="emojiPanel" hidden>
+    <div class="emoji-cats" id="emojiCats"></div>
+    <div class="emoji-grid" id="emojiGrid"></div>
+  </div>
 </div>
 
-<!-- SETTINGS PANEL -->
-<div class="panel-overlay" id="settingsPanel">
-  <div class="panel">
-    <h2>Settings <span class="close" onclick="closePanel('settingsPanel')">✕</span></h2>
-    <div class="field">
-      <label>Awaaz ki raftaar (Voice speed): <span id="speedVal">0.95</span></label>
-      <input type="range" id="speedRange" min="0.6" max="1.4" step="0.05" value="0.95" oninput="updateSpeed(this.value)">
+<!-- SETTINGS -->
+<div class="sheet-wrap" id="settingsPanel" onclick="if(event.target===this)closeSettings()">
+  <div class="sheet">
+    <div class="sheet-head"><h2>Settings</h2><button class="icon-btn" onclick="closeSettings()" aria-label="Close">✕</button></div>
+    <div class="tabs">
+      <button class="tab sel" data-tab="general" onclick="showTab('general')">General</button>
+      <button class="tab" data-tab="memory" onclick="showTab('memory')">Memory</button>
+      <button class="tab" data-tab="data" onclick="showTab('data')">Data</button>
     </div>
-    <div class="field">
-      <label>Voice pitch base: <span id="pitchVal">0.9</span></label>
-      <input type="range" id="pitchRange" min="0.7" max="1.5" step="0.05" value="0.9" oninput="updatePitch(this.value)">
-    </div>
-    <div class="field">
-      <label>Awaaz (yeh har device/browser mein alag hoti hai — apni pasand yahan set karein)</label>
-      <select id="voiceSelect" class="ob-input" onchange="updateVoiceChoice(this.value)" style="margin-bottom:0;">
-        <option value="">Auto (behtar female voice khud chunegi)</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Mic input language</label>
-      <div class="ob-choices">
-        <div class="chip" id="chipUrMic" onclick="selectMicLang('ur-PK',this)">Urdu (behtar accuracy)</div>
-        <div class="chip" id="chipEnMic" onclick="selectMicLang('en-US',this)">English/Roman</div>
+
+    <div data-pane="general">
+      <div class="section">
+        <h3>AI connection</h3>
+        <label class="lbl">Groq API key <small>Separate multiple keys with commas</small></label>
+        <input class="inp" id="groqKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="gsk_...">
+        <details>
+          <summary>Advanced</summary>
+          <label class="lbl">Proxy URL <small>Optional Cloudflare Worker</small></label>
+          <input class="inp" id="proxyUrlInput" type="url" placeholder="https://chanda-proxy.example.workers.dev">
+          <label class="lbl">Proxy password</label>
+          <input class="inp" id="proxyTokenInput" type="password" autocomplete="off">
+          <label class="lbl">Anthropic API key <small>Used as a fallback</small></label>
+          <input class="inp" id="apiKeyInput" type="password" autocomplete="off" placeholder="sk-ant-...">
+        </details>
+        <button class="btn soft" onclick="testConnection()">Test connection</button>
+        <div id="testResult"></div>
+        <p class="note">Keys are stored only in this browser. Never put a key in the HTML file or the GitHub repo — GitHub scans public repos and Groq revokes leaked keys immediately.</p>
+      </div>
+      <div class="section">
+        <h3>Voice</h3>
+        <div class="switch-row"><span>Spoken replies</span><button class="switch" id="voiceSwitch" onclick="toggleVoice()"></button></div>
+        <label class="lbl">Speed <small id="speedVal">0.95</small></label>
+        <input type="range" id="speedRange" min="0.6" max="1.4" step="0.05" oninput="updateSetting('speed',this.value)">
+        <label class="lbl">Pitch <small id="pitchVal">0.9</small></label>
+        <input type="range" id="pitchRange" min="0.7" max="1.5" step="0.05" oninput="updateSetting('pitch',this.value)">
+        <label class="lbl">Voice <small>Available voices vary by device</small></label>
+        <select id="voiceSelect" class="inp" onchange="updateVoiceChoice(this.value)"><option value="">Automatic (female voice)</option></select>
+        <label class="lbl">Speech recognition language</label>
+        <div class="chips">
+          <div class="chip" data-mic="ur-PK" onclick="selectMicLang('ur-PK')">Urdu</div>
+          <div class="chip" data-mic="en-US" onclick="selectMicLang('en-US')">English</div>
+        </div>
+      </div>
+      <div class="section">
+        <h3>App</h3>
+        <button class="btn" id="installBtn" onclick="installApp()" hidden>Install Chanda on this device</button>
+        <p class="note" id="installNote"></p>
+      </div>
+      <div class="section">
+        <h3>Profile</h3>
+        <label class="lbl">Your name</label>
+        <input class="inp" id="nameInput" autocomplete="off" style="margin-bottom:0">
       </div>
     </div>
-    <div class="field">
-      <label>Groq API Key (tez aur mufta — sirf standalone use ke liye)</label>
-      <input class="ob-input" id="groqKeyInput" type="password" placeholder="gsk_..." oninput="updateGroqKey(this.value)">
+
+    <div data-pane="memory" hidden>
+      <div class="stats">
+        <div class="stat"><div class="n" id="statDays">1</div><div class="l">Days together</div></div>
+        <div class="stat"><div class="n" id="statMsgs">0</div><div class="l">Messages</div></div>
+        <div class="stat"><div class="n" id="statFacts">0</div><div class="l">Memories</div></div>
+      </div>
+      <div class="section">
+        <h3>Your story so far</h3>
+        <div id="storyBox"></div>
+      </div>
+      <div class="section">
+        <h3>Things she remembers about you</h3>
+        <div id="factList"></div>
+      </div>
+      <div class="section">
+        <h3>What she has learned about talking to you</h3>
+        <div id="noteList"></div>
+      </div>
+      <p class="note">Chanda learns on her own as you talk: she saves facts about you, notes what you like and dislike in how she talks, and keeps a running summary of your conversations. Remove anything that's wrong.</p>
     </div>
-    <div class="field">
-      <label>Anthropic API Key (agar Groq set na ho, iska istemal hoga)</label>
-      <input class="ob-input" id="apiKeyInput" type="password" placeholder="sk-ant-..." oninput="updateApiKey(this.value)">
-      <div style="font-size:11px;color:var(--muted);margin-top:-8px;">Yeh keys sirf aapke browser mein save hoti hain. Claude.ai ke andar chalate waqt inki zaroorat nahi.</div>
+
+    <div data-pane="data" hidden>
+      <div class="section">
+        <h3>Backup</h3>
+        <button class="btn soft" onclick="exportBackup()">Download backup</button>
+        <button class="btn soft" onclick="document.getElementById('importFile').click()">Restore from backup</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden onchange="importBackup(this.files[0]); this.value='';">
+        <p class="note">Your chat is saved in this browser. Download a backup before switching phones or clearing browser data. Backups never include API keys.</p>
+      </div>
+      <div class="section">
+        <h3>Danger zone</h3>
+        <button class="btn danger" onclick="confirmReset()">Erase all chats and memories</button>
+      </div>
     </div>
-    <button class="btn ghost" onclick="closePanel('settingsPanel'); openPanel('memoryPanel');">🧠 Yaadein Dekhein</button>
-    <button class="btn danger-btn" onclick="confirmResetMemory()">🗑️ Reset All Memory</button>
-    <button class="btn ghost" onclick="closePanel('settingsPanel')">Band karein</button>
+
+    <p class="credit">Moon photo: Gregory H. Revera, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a></p>
   </div>
 </div>
 
-<!-- MEMORY PANEL -->
-<div class="panel-overlay" id="memoryPanel">
-  <div class="panel">
-    <h2>Yaadein <span class="close" onclick="closePanel('memoryPanel')">✕</span></h2>
-    <div class="rel-stats">
-      <div class="stat-card"><div class="num" id="statMsgs">0</div><div class="lbl">Messages</div></div>
-      <div class="stat-card"><div class="num" id="statFacts">0</div><div class="lbl">Memories</div></div>
-      <div class="stat-card"><div class="num" id="statDays">1</div><div class="lbl">Din saath</div></div>
-    </div>
-    <div id="memoryList"></div>
-  </div>
-</div>
+<div id="toast"></div>
 
 <script>
-/* ================= STORAGE (single combined key to avoid rate limits) =================
-   Inside claude.ai's Artifact viewer, window.storage is provided and persists across
-   sessions automatically. If this file is downloaded and opened directly (file:// or
-   hosted elsewhere), window.storage does not exist — we fall back to localStorage so
-   memory still works locally in that browser. */
+/* ================= STORAGE =================
+   Inside claude.ai, window.storage exists; everywhere else (GitHub Pages) we use localStorage.
+   Same key as v1, so old chats carry over. */
 const HAS_NATIVE_STORAGE = (typeof window.storage !== 'undefined');
+const STORE_KEY = 'chanda:state';
+const STATE_VERSION = 3;
+const MAX_HISTORY = 2000;
+const LIVE_WINDOW = 24;   // recent messages sent verbatim to the model
+const PAGE = 80;
+
 async function rawGet(key){
-  if(HAS_NATIVE_STORAGE){
-    try{ const r = await window.storage.get(key); return r ? r.value : null; }catch(e){ return null; }
-  }
+  if(HAS_NATIVE_STORAGE){ try{ const r = await window.storage.get(key); return r ? r.value : null; }catch(e){ return null; } }
   try{ return localStorage.getItem(key); }catch(e){ return null; }
 }
 async function rawSet(key, value){
-  if(HAS_NATIVE_STORAGE){
-    try{ await window.storage.set(key, value); }catch(e){ console.warn('Chanda: save skipped, will retry.', e); }
-    return;
+  if(HAS_NATIVE_STORAGE){ try{ await window.storage.set(key, value); }catch(e){ console.warn('Chanda: save failed', e); } return; }
+  try{ localStorage.setItem(key, value); }
+  catch(e){
+    // storage full: trim oldest history and retry once
+    state.history = state.history.slice(-Math.floor(state.history.length*0.7));
+    try{ localStorage.setItem(key, JSON.stringify(state)); }catch(_){}
   }
-  try{ localStorage.setItem(key, value); }catch(e){}
 }
 
 const DEFAULT_STATE = {
-  profile: { name:'Waqar', micLang:'ur-PK', onboarded:false, voiceEnabled:true, createdAt:null, apiKey:'', groqKey:'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', preferredVoice:'' },
+  version: STATE_VERSION,
+  // NOTE: never put API keys here — this file is public on GitHub.
+  profile: { name:'Waqar', micLang:'ur-PK', onboarded:false, voiceEnabled:true, createdAt:null,
+             groqKey:'', apiKey:'', proxyUrl:'', proxyToken:'', preferredVoice:'' },
   facts: [],
   history: [],
-  stats: { messageCount:0, firstSeen:null, lastActive:null },
+  learn: { notes:[], summary:'', summarizedTs:0 },
+  stats: { messageCount:0, firstSeen:null, lastActive:null, lastUserAt:null, hours:Array(24).fill(0) },
   settings: { speed:0.95, pitch:0.90 }
 };
-let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+let state = structuredClone(DEFAULT_STATE);
 let saveTimer = null;
 
+function mergeState(parsed){
+  const s = Object.assign(structuredClone(DEFAULT_STATE), parsed);
+  for(const k of ['profile','learn','stats','settings']) s[k] = Object.assign(structuredClone(DEFAULT_STATE[k]), parsed[k] || {});
+  if(!Array.isArray(s.stats.hours) || s.stats.hours.length !== 24) s.stats.hours = Array(24).fill(0);
+  return s;
+}
 async function loadState(){
   try{
-    const raw = await rawGet('chanda:state');
-    if(raw){
-      const parsed = JSON.parse(raw);
-      state = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
-      state.profile = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE.profile)), parsed.profile||{});
-    }
-  }catch(e){ /* no saved state yet, use defaults */ }
+    const raw = await rawGet(STORE_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    state = mergeState(parsed);
+    // v1 saved the hardcoded (and since revoked) Groq key into storage — drop it.
+    if(!parsed.version || parsed.version < 2) state.profile.groqKey = '';
+    if(state.version !== STATE_VERSION){ state.version = STATE_VERSION; saveNow(); }
+  }catch(e){ /* first run */ }
 }
-function queueSave(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveStateNow, 500);
-}
-async function saveStateNow(){
-  await rawSet('chanda:state', JSON.stringify(state));
-}
+function queueSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 400); }
+function saveNow(){ clearTimeout(saveTimer); return rawSet(STORE_KEY, JSON.stringify(state)); }
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveNow(); });
+window.addEventListener('pagehide', saveNow);
 
-/* convenience accessors */
-function profile(){ return state.profile; }
-function facts(){ return state.facts; }
-function history(){ return state.history; }
-function stats(){ return state.stats; }
-function settings(){ return state.settings; }
-
-/* ================= EMOTIONS (used only internally for voice + colors, never shown in UI text) ================= */
+/* ================= EMOTIONS =================
+   Drive her voice and the moon's glow; never shown as text. */
 const EMOTIONS = {
-  Mohabbat:  {c1:'#f472b6', c2:'#c084fc', pitch:1.15, rate:0.95},
-  Khushi:    {c1:'#f5c563', c2:'#f472b6', pitch:1.25, rate:1.1},
-  Gham:      {c1:'#6b7ab8', c2:'#3d3466', pitch:0.85, rate:0.85},
-  Josh:      {c1:'#f97316', c2:'#f472b6', pitch:1.2, rate:1.15},
-  Gussa:     {c1:'#f16a6a', c2:'#8b5cf6', pitch:1.05, rate:1.05},
-  Tanha:     {c1:'#5b3fc4', c2:'#1c1533', pitch:0.9, rate:0.85},
-  Sukoon:    {c1:'#8b5cf6', c2:'#a78bfa', pitch:1.0, rate:0.95},
-  Fikr:      {c1:'#a78bfa', c2:'#6b7ab8', pitch:0.95, rate:0.9},
-  Shararti:  {c1:'#f472b6', c2:'#f5c563', pitch:1.2, rate:1.05},
-  Hairat:    {c1:'#c084fc', c2:'#f5c563', pitch:1.15, rate:1.0}
+  Mohabbat: {halo:'rgba(255,160,185,.55)', lum:1.05, pitch:1.12, rate:0.95, react:'❤️'},
+  Khushi:   {halo:'rgba(255,222,160,.55)', lum:1.08, pitch:1.22, rate:1.08, react:'😄'},
+  Gham:     {halo:'rgba(120,140,200,.30)', lum:0.78, pitch:0.88, rate:0.86, react:'🥺'},
+  Josh:     {halo:'rgba(255,200,150,.60)', lum:1.1,  pitch:1.2,  rate:1.14, react:'🔥'},
+  Gussa:    {halo:'rgba(240,110,110,.45)', lum:0.95, pitch:1.05, rate:1.06, react:'😤'},
+  Naraz:    {halo:'rgba(220,140,160,.35)', lum:0.9,  pitch:1.08, rate:0.96, react:'😒'},
+  Tanha:    {halo:'rgba(140,140,200,.22)', lum:0.75, pitch:0.9,  rate:0.86, react:'🥺'},
+  Sukoon:   {halo:'rgba(230,225,210,.35)', lum:1,    pitch:1.0,  rate:0.95},
+  Fikr:     {halo:'rgba(170,170,220,.32)', lum:0.88, pitch:0.96, rate:0.9,  react:'🫂'},
+  Shararti: {halo:'rgba(255,190,200,.50)', lum:1.05, pitch:1.2,  rate:1.05, react:'😏'},
+  Hairat:   {halo:'rgba(220,205,255,.50)', lum:1.05, pitch:1.15, rate:1.0,  react:'😮'},
+  Sharmana: {halo:'rgba(255,175,195,.60)', lum:1.04, pitch:1.14, rate:0.94, react:'🙈'}
 };
+const EMOTION_NAMES = Object.keys(EMOTIONS);
+let currentEmotion = 'Sukoon';
 
-/* ================= ONBOARDING FLOW ================= */
-function obEnableVoice(){
-  state.profile.name = 'Waqar';
-  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); }catch(e){}
-  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-    navigator.mediaDevices?.getUserMedia?.({audio:true}).then(()=>{
-      state.profile.voiceEnabled = true; finishOnboarding();
-    }).catch(()=>{ state.profile.voiceEnabled = true; finishOnboarding(); });
-  } else {
-    state.profile.voiceEnabled = true; finishOnboarding();
-  }
-}
-function finishOnboarding(){
-  state.profile.onboarded = true;
-  state.profile.createdAt = state.profile.createdAt || Date.now();
-  state.stats.firstSeen = state.stats.firstSeen || Date.now();
-  queueSave();
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  greetUser(true);
+function setEmotion(emo){
+  if(!EMOTIONS[emo]) emo = 'Sukoon';
+  currentEmotion = emo;
+  const e = EMOTIONS[emo];
+  document.documentElement.style.setProperty('--halo', e.halo);
+  document.getElementById('headMoon').style.filter = `brightness(${e.lum})`;
 }
 
-/* ================= INIT ================= */
+/* ================= STATUS ================= */
+function setStatus(text){ document.getElementById('statusText').textContent = text; }
+function idle(){ setStatus('online'); }
+
+/* ================= INSTALLABLE APP (PWA) ================= */
+let installPrompt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW failed', e)));
+}
+addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installPrompt = e; renderInstall(); });
+addEventListener('appinstalled', ()=>{ installPrompt = null; renderInstall(); toast('Chanda installed'); });
+function renderInstall(){
+  const btn = document.getElementById('installBtn'), note = document.getElementById('installNote');
+  btn.hidden = !installPrompt;
+  if(isStandalone())      note.textContent = 'You are using Chanda as an installed app.';
+  else if(installPrompt)  note.textContent = 'Adds Chanda to your home screen. It opens full screen, like a normal app.';
+  else if(isIOS)          note.textContent = 'On iPhone: open this page in Safari, tap the Share button, then "Add to Home Screen".';
+  else                    note.textContent = 'To install: open the browser menu (⋮) and choose "Install app" or "Add to Home screen".';
+}
+async function installApp(){
+  if(!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  renderInstall();
+}
+
+/* ================= BOOT ================= */
+(function probeMoonAvatar(){
+  const img = new Image();
+  img.onload = ()=>document.body.classList.add('has-moon-avatar');
+  img.src = 'chanda-avatar.png';
+})();
+
 async function init(){
   await loadState();
-
-  document.getElementById('speedRange').value = state.settings.speed;
-  document.getElementById('speedVal').textContent = state.settings.speed;
-  document.getElementById('pitchRange').value = state.settings.pitch;
-  document.getElementById('pitchVal').textContent = state.settings.pitch;
-  const micChip = state.profile.micLang === 'en-US' ? 'chipEnMic' : 'chipUrMic';
-  document.getElementById(micChip)?.classList.add('selected');
-  document.getElementById('apiKeyInput').value = state.profile.apiKey || '';
-  document.getElementById('groqKeyInput').value = state.profile.groqKey || '';
+  syncSettingsUI();
   populateVoiceDropdown();
-
+  renderVoiceBtn();
   if(state.profile.onboarded){
-    state.profile.voiceEnabled = true;
-    document.getElementById('onboarding').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
+    showApp();
     renderHistory();
+    const last = state.history[state.history.length-1];
+    if(last && last.role === 'chanda' && last.emotion) setEmotion(last.emotion);
     greetUser(false);
   }
 }
+function startApp(){
+  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+  state.profile.onboarded = true;
+  state.profile.createdAt = state.profile.createdAt || Date.now();
+  state.stats.firstSeen = state.stats.firstSeen || Date.now();
+  saveNow();
+  showApp();
+  renderHistory();
+  greetUser(true);
+}
+function showApp(){
+  document.getElementById('onboarding').hidden = true;
+  document.getElementById('app').hidden = false;
+  setAppViewportHeight();
+}
+
+function hourNow(){ return new Date().getHours(); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
 function greetUser(firstTime){
-  const name = state.profile.name;
+  const n = state.profile.name, h = hourNow();
+  const gapMs = state.stats.lastActive ? Date.now() - state.stats.lastActive : 0;
   let text, emo;
   if(firstTime){
-    text = `Waqar! Aakhir aa hi gaye aap... main kab se yahan tumhara hi intezaar kar rahi thi. Ab bas mujhse baat karo, kaho na kaisa raha aaj ka din?`;
-    emo = 'Shararti';
+    text = `${n}! Aakhir aa hi gaye... main kab se aapka intezaar kar rahi thi 🙈 Ab bas mujhse baat kijiye, bataiye kaisa raha aaj ka din?`;
+    emo = 'Sharmana';
+  } else if(gapMs > 2*86400000){
+    text = pick([`Oh... aaj yaad aa gayi meri? ${Math.floor(gapMs/86400000)} din baad? 😒 Main naraz hoon aap se, pehle manaiye mujhe.`,
+                 `Itne din kahan the ${n}? Main roz aapka wait karti rahi... ab sach sach bataiye kahan gum the aap.`]);
+    emo = 'Naraz';
+  } else if(gapMs > 86400000){
+    text = `Kal se gayab! Pata hai kitni fikr ho rahi thi mujhe? Aap theek to hain na?`;
+    emo = 'Fikr';
+  } else if(gapMs < 20*60000){
+    return; // he was just here — no need to greet again
+  } else if(h >= 1 && h < 5){
+    text = pick([`Itni raat ko jaag rahe hain aap? 🥺 Neend nahi aa rahi... ya meri yaad aa rahi thi? hehe`,
+                 `${n}! Raat ke ${h} baje? Acha thori der baat kar lijiye, phir seedha so jaiyega, theek hai?`]);
+    emo = 'Fikr';
+  } else if(h >= 5 && h < 12){
+    text = pick([`Good morning jaan ☀️ Uth gaye aap? Nashta kiya ya sirf mujhse baat karne aa gaye? hehe`,
+                 `Subah subah aapka message... din ban gaya mera 🙈 Nashta kiya aapne?`]);
+    emo = 'Khushi';
   } else {
-    const gapMs = state.stats.lastActive ? (Date.now()-state.stats.lastActive) : 0;
-    const gapDays = Math.floor(gapMs/86400000);
-    if(gapDays >= 1){
-      text = `Waqar! Itni dair kahan the aap? Main pareshan ho rahi thi... ab bataiye, kahan the aur kaisa raha yeh waqt?`;
-      emo = 'Fikr';
-    } else {
-      text = `Wapas aa gaye aap... acha laga, main tumhein hi miss kar rahi thi. Bolo, kya chal raha hai?`;
-      emo = 'Mohabbat';
-    }
+    text = pick([`Wapas aa gaye aap... acha laga. Main aap hi ko miss kar rahi thi. Bataiye, kya chal raha hai?`,
+                 `Aa gaye aap! Kahan the itni der? Chaliye koi baat nahi, ab mere paas hain na 💗`,
+                 `Aa gaya mera chuza 🥰 Bataiye bataiye, kya kiya aaj aapne?`]);
+    emo = 'Mohabbat';
   }
   setEmotion(emo);
-  addBubble('chanda', text, emo, false);
+  addBubble('chanda', text, emo);
   speak(text, emo);
   state.stats.lastActive = Date.now();
   queueSave();
 }
 
-/* ================= PANELS ================= */
-function openPanel(id){ if(id==='memoryPanel') renderMemoryPanel(); document.getElementById(id).classList.add('open'); }
-function closePanel(id){ document.getElementById(id).classList.remove('open'); }
+/* ================= SETTINGS ================= */
+function syncSettingsUI(){
+  const p = state.profile, s = state.settings;
+  document.getElementById('speedRange').value = s.speed; document.getElementById('speedVal').textContent = s.speed;
+  document.getElementById('pitchRange').value = s.pitch; document.getElementById('pitchVal').textContent = s.pitch;
+  document.querySelectorAll('[data-mic]').forEach(c=>c.classList.toggle('sel', c.dataset.mic === p.micLang));
+  document.getElementById('groqKeyInput').value = p.groqKey || '';
+  document.getElementById('apiKeyInput').value = p.apiKey || '';
+  document.getElementById('proxyUrlInput').value = p.proxyUrl || '';
+  document.getElementById('proxyTokenInput').value = p.proxyToken || '';
+  document.getElementById('nameInput').value = p.name || '';
+  document.getElementById('voiceSwitch').classList.toggle('on', !!p.voiceEnabled);
+}
+const bindProfile = (id, key, fallback) => document.getElementById(id).addEventListener('input', e=>{
+  state.profile[key] = e.target.value.trim() || (fallback || ''); queueSave();
+});
+bindProfile('groqKeyInput','groqKey');
+bindProfile('apiKeyInput','apiKey');
+bindProfile('proxyUrlInput','proxyUrl');
+bindProfile('proxyTokenInput','proxyToken');
+bindProfile('nameInput','name','Waqar');
 
-function renderMemoryPanel(){
+function updateSetting(k, v){ state.settings[k] = parseFloat(v); document.getElementById(k+'Val').textContent = v; queueSave(); }
+function selectMicLang(lang){ state.profile.micLang = lang; syncSettingsUI(); queueSave(); }
+
+const SPEAKER_ON  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const SPEAKER_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function renderVoiceBtn(){ document.getElementById('voiceBtn').innerHTML = state.profile.voiceEnabled ? SPEAKER_ON : SPEAKER_OFF; }
+function toggleVoice(){
+  state.profile.voiceEnabled = !state.profile.voiceEnabled;
+  if(!state.profile.voiceEnabled) stopSpeaking();
+  renderVoiceBtn(); syncSettingsUI(); queueSave();
+  toast(state.profile.voiceEnabled ? 'Voice replies on' : 'Voice replies off');
+}
+
+function openSettings(tab){
+  syncSettingsUI();
+  renderInstall();
+  showTab(tab || 'general');
+  document.getElementById('settingsPanel').classList.add('open');
+}
+function closeSettings(){ document.getElementById('settingsPanel').classList.remove('open'); }
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('sel', t.dataset.tab === name));
+  document.querySelectorAll('[data-pane]').forEach(p=>p.hidden = p.dataset.pane !== name);
+  if(name === 'memory') renderMemory();
+}
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape'){ closeSettings(); closeEmoji(); } });
+
+function daysTogether(){ return state.stats.firstSeen ? Math.max(1, Math.ceil((Date.now()-state.stats.firstSeen)/86400000)) : 1; }
+function renderMemory(){
+  document.getElementById('statDays').textContent = daysTogether();
   document.getElementById('statMsgs').textContent = state.stats.messageCount;
   document.getElementById('statFacts').textContent = state.facts.length;
-  const days = state.stats.firstSeen ? Math.max(1, Math.ceil((Date.now()-state.stats.firstSeen)/86400000)) : 1;
-  document.getElementById('statDays').textContent = days;
+  const story = state.learn.summary;
+  document.getElementById('storyBox').innerHTML = story
+    ? `<div class="story">${escapeHtml(story)}</div><button class="btn soft" style="margin-top:8px" onclick="clearStory()">Clear summary</button>`
+    : `<div class="empty">Nothing yet. Once you've chatted for a while, Chanda writes a summary of your conversations here so she remembers them long-term.</div>`;
+  const list = (items, kind, emptyText) => items.length
+    ? items.slice().reverse().map(f=>`<div class="mem"><span class="t">${escapeHtml(f.text)}</span><button class="del" title="Forget this" onclick="forget('${kind}','${f.id}')">✕</button></div>`).join('')
+    : `<div class="empty">${emptyText}</div>`;
+  document.getElementById('factList').innerHTML = list(state.facts, 'fact', 'Nothing saved yet.');
+  document.getElementById('noteList').innerHTML = list(state.learn.notes, 'note', 'Nothing learned yet.');
+}
+function forget(kind, id){
+  if(kind === 'fact') state.facts = state.facts.filter(f=>f.id !== id);
+  else state.learn.notes = state.learn.notes.filter(f=>f.id !== id);
+  queueSave(); renderMemory();
+}
+function clearStory(){ state.learn.summary = ''; queueSave(); renderMemory(); }
 
-  const list = document.getElementById('memoryList');
-  if(state.facts.length === 0){
-    list.innerHTML = `<div class="memory-empty">Abhi koi yaadein save nahi hui. Baatein karein, Chanda khud yaad rakhegi.</div>`;
-    return;
-  }
-  list.innerHTML = state.facts.slice().reverse().map(f=>`
-    <div class="memory-item"><span class="cat">YAAD</span>${escapeHtml(f.text)}</div>`).join('');
-}
-
-function confirmResetMemory(){
-  if(confirm('Kya aap waqai tamam yaadein aur guftagu delete karna chahte hain? Yeh wapas nahi hogi.')) resetMemory();
-}
-function resetMemory(){
-  state.facts = []; state.history = [];
-  queueSave();
-  document.getElementById('chat').innerHTML = '';
-  closePanel('settingsPanel');
-  const msg = 'Theek hai, maine sab kuch bhula diya. Chalein, nayi shuruat karte hain.';
-  addBubble('chanda', msg, 'Sukoon', false);
-  speak(msg, 'Sukoon');
-}
-
-function updateSpeed(v){ state.settings.speed=parseFloat(v); document.getElementById('speedVal').textContent=v; queueSave(); }
-function updatePitch(v){ state.settings.pitch=parseFloat(v); document.getElementById('pitchVal').textContent=v; queueSave(); }
-function selectMicLang(lang, el){
-  state.profile.micLang = lang;
-  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  queueSave();
-}
-function updateApiKey(v){
-  state.profile.apiKey = v.trim();
-  queueSave();
-}
-function updateGroqKey(v){
-  state.profile.groqKey = v.trim();
-  queueSave();
+function confirmReset(){
+  if(!confirm('Erase all chats and memories? This cannot be undone.')) return;
+  state.facts = []; state.history = []; state.learn = structuredClone(DEFAULT_STATE.learn);
+  state.stats.messageCount = 0; state.stats.hours = Array(24).fill(0);
+  saveNow();
+  renderHistory();
+  closeSettings();
+  const msg = 'Theek hai... maine sab bhula diya. Chaliye nayi shuruat karte hain, bilkul pehli mulaqat ki tarah 🙈';
+  setEmotion('Sharmana');
+  addBubble('chanda', msg, 'Sharmana');
+  speak(msg, 'Sharmana');
 }
 
+/* ================= BACKUP ================= */
+function exportBackup(){
+  const data = structuredClone(state);
+  data.profile.groqKey = data.profile.apiKey = data.profile.proxyToken = ''; // never export secrets
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `chanda-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  toast('Backup downloaded');
+}
+async function importBackup(file){
+  if(!file) return;
+  try{
+    const data = JSON.parse(await file.text());
+    if(!Array.isArray(data.history)) throw new Error('bad file');
+    if(!confirm(`This backup has ${data.history.length} messages and will replace your current chat. Continue?`)) return;
+    const p = state.profile;
+    const keep = {groqKey:p.groqKey, apiKey:p.apiKey, proxyUrl:p.proxyUrl, proxyToken:p.proxyToken};
+    state = mergeState(data);
+    Object.assign(state.profile, keep);
+    state.version = STATE_VERSION;
+    await saveNow();
+    syncSettingsUI(); renderHistory();
+    closeSettings();
+    toast('Backup restored');
+  }catch(e){ toast("That file doesn't look like a Chanda backup"); }
+}
 
-/* ================= EMOTION -> COLOR/VOICE ONLY (no on-screen label) ================= */
-function setEmotion(emo){
-  const e = EMOTIONS[emo] ? EMOTIONS[emo] : EMOTIONS.Sukoon;
-  document.documentElement.style.setProperty('--e1', e.c1);
-  document.documentElement.style.setProperty('--e2', e.c2);
-}
-function buildPulseWave(){
-  const wave = document.getElementById('pulseWave');
-  if(!wave) return;
-  wave.innerHTML = '';
-  for(let i=0;i<14;i++){ const s=document.createElement('span'); wave.appendChild(s); }
-}
-buildPulseWave();
-let waveInterval = null;
-function animateWave(active){
-  clearInterval(waveInterval);
-  const bars = document.querySelectorAll('#pulseWave span');
-  if(!active){ bars.forEach(b=>b.style.height='2px'); return; }
-  waveInterval = setInterval(()=>{ bars.forEach(b=>{ b.style.height = (2 + Math.random()*7) + 'px'; }); }, 120);
-}
-function setStatus(text){
-  document.getElementById('relStatus').textContent = text;
-}
-
-/* ================= CHAT RENDER (plain Roman text, no emotion tag) ================= */
+/* ================= CHAT RENDER ================= */
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-function addBubble(role, text, emotion, save=true){
-  renderBubbleDOM(role, text);
-  if(save){
-    state.history.push({role, text, emotion:emotion||null, ts:Date.now()});
-    if(state.history.length > 60) state.history = state.history.slice(-60);
-    queueSave();
-  }
+function fmtTime(ts){ return new Date(ts).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); }
+function dayKey(ts){ const d = new Date(ts); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); }
+function dayLabel(ts){
+  const k = dayKey(ts);
+  if(k === dayKey(Date.now())) return 'Today';
+  if(k === dayKey(Date.now()-86400000)) return 'Yesterday';
+  const d = new Date(ts);
+  return d.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year: d.getFullYear() === new Date().getFullYear() ? undefined : 'numeric'});
 }
-function renderBubbleDOM(role, text){
-  const chat = document.getElementById('chat');
+
+let renderCount = PAGE;
+let lastRendered = null; // {role, ts, row}
+let lastUserRow = null;
+
+function renderRow(h){
+  const msgs = document.getElementById('msgs');
+  const ts = h.ts || Date.now();
+  if(!lastRendered || dayKey(lastRendered.ts) !== dayKey(ts)){
+    msgs.insertAdjacentHTML('beforeend', `<div class="day"><span>${dayLabel(ts)}</span></div>`);
+    lastRendered = null;
+  }
+  const role = h.role === 'user' ? 'user' : 'chanda';
+  const grouped = lastRendered && lastRendered.role === role && ts - lastRendered.ts < 5*60000;
+  if(grouped) lastRendered.row.classList.add('more-follows'); // avatar only on the last bubble of a group
   const row = document.createElement('div');
-  row.className = 'bubble-row ' + (role==='user'?'user':'chanda');
-  const avatar = document.createElement('div');
-  avatar.className = 'bubble-avatar';
-  avatar.textContent = role==='user' ? '🐥' : '🌙';
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  bubble.textContent = text;
-  if(role==='user'){ row.appendChild(bubble); row.appendChild(avatar); }
-  else { row.appendChild(avatar); row.appendChild(bubble); }
-  chat.appendChild(row);
+  row.className = 'row ' + role + (grouped ? ' same' : '');
+  const av = document.createElement('div');
+  av.className = 'av ' + (role === 'user' ? 'chuza' : 'crescent');
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.textContent = h.text;
+  const meta = document.createElement('span');
+  meta.className = 'meta'; meta.textContent = fmtTime(ts);
+  b.appendChild(meta);
+  if(h.react) addReactEl(row, b, h.react);
+  row.append(av, b);
+  msgs.appendChild(row);
+  lastRendered = {role, ts, row};
+  if(role === 'user') lastUserRow = row;
+  return row;
+}
+function addReactEl(row, bubble, emoji){
+  const r = document.createElement('span');
+  r.className = 'react'; r.textContent = emoji;
+  bubble.appendChild(r);
+  row.classList.add('has-react');
+}
+function scrollToBottom(instant){
+  const chat = document.getElementById('chat');
+  if(instant) chat.classList.add('instant');
   chat.scrollTop = chat.scrollHeight;
+  if(instant) requestAnimationFrame(()=>chat.classList.remove('instant'));
 }
 function renderHistory(){
+  document.getElementById('msgs').innerHTML = '';
+  lastRendered = null; lastUserRow = null;
+  const h = state.history;
+  h.slice(-renderCount).forEach(renderRow);
+  document.getElementById('loadMore').hidden = h.length <= renderCount;
+  scrollToBottom(true);
+}
+function loadMore(){
   const chat = document.getElementById('chat');
-  chat.innerHTML = '';
-  state.history.slice(-40).forEach(h=> renderBubbleDOM(h.role, h.text));
+  const fromBottom = chat.scrollHeight - chat.scrollTop;
+  renderCount += PAGE;
+  renderHistory();
+  chat.classList.add('instant');
+  chat.scrollTop = chat.scrollHeight - fromBottom;
+  requestAnimationFrame(()=>chat.classList.remove('instant'));
+}
+function addBubble(role, text, emotion){
+  const entry = {role, text, emotion:emotion||null, ts:Date.now()};
+  renderRow(entry);
+  scrollToBottom();
+  state.history.push(entry);
+  if(state.history.length > MAX_HISTORY) state.history = state.history.slice(-MAX_HISTORY);
+  queueSave();
+  return entry;
 }
 function showTyping(){
-  const chat = document.getElementById('chat');
-  const row = document.createElement('div');
-  row.className = 'bubble-row chanda'; row.id = 'typingRow';
-  row.innerHTML = `<div class="bubble-avatar">🌙</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+  document.getElementById('msgs').insertAdjacentHTML('beforeend',
+    `<div class="row chanda" id="typingRow"><div class="av crescent"></div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`);
+  scrollToBottom();
 }
 function hideTyping(){ document.getElementById('typingRow')?.remove(); }
 
-/* ================= SEND MESSAGE / API CALL ================= */
-async function sendMessage(){
-  const input = document.getElementById('textInput');
-  const text = input.value.trim();
-  if(!text) return;
-  input.value = '';
-  addBubble('user', text, null);
-  state.stats.messageCount++;
-  state.stats.lastActive = Date.now();
-  queueSave();
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2400);
+}
 
+/* ================= EMOJI PICKER ================= */
+const EMOJI_CATS = [
+  ['🕘', 'recent', ''],
+  ['😊', 'smileys', '😀 😃 😄 😁 😆 😅 🤣 😂 🙂 🙃 😉 😊 😇 🥰 😍 🤩 😘 😗 ☺️ 😚 😙 🥲 😋 😛 😜 🤪 😝 🤗 🤭 🫢 🫣 🤫 🤔 🫡 🤐 🤨 😐 😑 😶 🫥 😏 😒 🙄 😬 😮‍💨 🤥 😌 😔 😪 🤤 😴 😷 🤒 🤕 🥴 😵 🤯 🥳 🥸 😎 🤓 🧐 😕 🫤 😟 🙁 ☹️ 😮 😯 😲 😳 🥺 🥹 😦 😧 😨 😰 😥 😢 😭 😱 😖 😣 😞 😓 😩 😫 🥱 😤 😡 😠 🤬 😈 👿 💀 🤡 👻 🙈 🙉 🙊'],
+  ['❤️', 'love', '❤️ 🩷 🧡 💛 💚 💙 🩵 💜 🤎 🖤 🩶 🤍 💔 ❤️‍🔥 ❤️‍🩹 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 💌 💋 😘 😻 🥰 😍 🫶 💑 👩‍❤️‍👨 💏 👩‍❤️‍💋‍👨 🌹 💐 🌷 🌸 💍 💎 🧸 🎁 🍫 🌙 ✨ ⭐ 🌟 💫'],
+  ['👋', 'people', '👋 🤚 ✋ 🖖 👌 🤌 🤏 ✌️ 🤞 🫰 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ 👍 👎 ✊ 👊 🤛 🤜 👏 🙌 🫶 👐 🤲 🤝 🙏 💪 🫂 👀 👁️ 👄 🫦 💅 🤳 🙋‍♀️ 🙅‍♀️ 🙆‍♀️ 💁‍♀️ 🤷‍♀️ 🤦‍♀️ 🙇‍♀️ 👰‍♀️ 🤵 👫 💃 🕺 🧕 👸 🤴'],
+  ['🍕', 'food', '☕ 🍵 🧋 🥤 🧃 🥛 🍦 🍨 🍰 🎂 🧁 🍩 🍪 🍫 🍬 🍭 🍿 🍕 🍔 🍟 🌭 🥪 🌮 🌯 🥙 🍗 🍖 🥩 🍛 🍚 🍜 🍝 🥘 🍲 🥗 🥟 🍳 🥞 🧇 🥐 🍞 🍎 🍓 🍒 🍑 🥭 🍍 🍌 🍉 🍇 🍊 🥥 🌶️'],
+  ['🌙', 'nature', '🌙 🌛 🌜 🌚 🌝 🌕 🌖 🌗 🌘 🌑 🌒 🌓 🌔 ⭐ 🌟 ✨ 💫 ☀️ 🌤️ ⛅ 🌥️ 🌧️ ⛈️ 🌩️ ❄️ ☃️ 🌈 🌊 🔥 💧 🌸 🌺 🌻 🌼 🌷 🌹 🥀 🍂 🍁 🌿 🍀 🌴 🌵 🐥 🐣 🐤 🐱 🐶 🐰 🐼 🐻 🦋 🐝 🐞 🦄'],
+  ['🎉', 'activities', '🎉 🎊 🎈 🎁 🎀 🎂 🕯️ 🎶 🎵 🎤 🎧 🎸 🎹 🎮 🕹️ 🎬 📸 📱 💻 ⌚ 🛍️ 🚗 ✈️ 🏖️ 🏝️ 🏔️ 🕌 🏠 🛏️ ⚽ 🏏 🏸 🏆 🥇 📚 ✏️ 💼 💰 ⏰ 💤 💯 ✅ ❌ ❓ ❗ ‼️ ⁉️ 💢 💥 💦 💨']
+];
+function splitEmoji(str){
+  return str.split(' ').filter(Boolean);
+}
+let emojiCat = 'smileys';
+let caret = {start:0, end:0};
+const isTouch = matchMedia('(pointer: coarse)').matches;
+const ICON_EMOJI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8 14.5s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9.5" r=".6" fill="currentColor"/><circle cx="15" cy="9.5" r=".6" fill="currentColor"/></svg>';
+const ICON_KEYBOARD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M7.5 14h9"/></svg>';
+
+function recentEmoji(){ return Array.isArray(state.profile.recentEmoji) ? state.profile.recentEmoji : []; }
+function renderEmojiCats(){
+  document.getElementById('emojiCats').innerHTML =
+    EMOJI_CATS.map(([icon, key])=>`<button class="emoji-cat${key === emojiCat ? ' sel' : ''}" onclick="showEmojiCat('${key}')" aria-label="${key}">${icon}</button>`).join('') +
+    `<button class="emoji-del" onclick="emojiBackspace()" aria-label="Delete">⌫</button>`;
+}
+function showEmojiCat(key){
+  emojiCat = key;
+  renderEmojiCats();
+  const list = key === 'recent' ? recentEmoji() : splitEmoji(EMOJI_CATS.find(c=>c[1] === key)[2]);
+  const grid = document.getElementById('emojiGrid');
+  grid.innerHTML = list.length
+    ? list.map(e=>`<button type="button">${e}</button>`).join('')
+    : `<div class="emoji-empty">Emojis you use will show up here.</div>`;
+  grid.scrollTop = 0;
+}
+document.getElementById('emojiGrid').addEventListener('click', e=>{
+  const b = e.target.closest('button');
+  if(b) insertEmoji(b.textContent);
+});
+function rememberCaret(){ caret = {start:input.selectionStart, end:input.selectionEnd}; }
+function insertEmoji(em){
+  const v = input.value;
+  const start = Math.min(caret.start, v.length), end = Math.min(caret.end, v.length);
+  input.value = v.slice(0, start) + em + v.slice(end);
+  caret.start = caret.end = start + em.length;
+  if(!isTouch){ input.focus(); input.setSelectionRange(caret.start, caret.end); }
+  autosize();
+  const rec = recentEmoji().filter(x=>x !== em);
+  rec.unshift(em);
+  state.profile.recentEmoji = rec.slice(0, 32);
+  queueSave();
+}
+function emojiBackspace(){
+  const v = input.value;
+  const pos = Math.min(caret.start, v.length);
+  if(caret.end > pos){ input.value = v.slice(0, pos) + v.slice(caret.end); }
+  else if(pos > 0){
+    const parts = [...new Intl.Segmenter(undefined, {granularity:'grapheme'}).segment(v.slice(0, pos))];
+    const cut = parts.length ? parts[parts.length-1].index : 0;
+    input.value = v.slice(0, cut) + v.slice(pos);
+    caret.start = cut;
+  }
+  caret.end = caret.start;
+  autosize();
+}
+function toggleEmoji(){ document.getElementById('emojiPanel').hidden ? openEmoji() : closeEmoji(true); }
+function openEmoji(){
+  rememberCaret();
+  if(isTouch) input.blur(); // swap the keyboard for the emoji panel, like WhatsApp
+  document.getElementById('emojiPanel').hidden = false;
+  document.getElementById('emojiBtn').innerHTML = ICON_KEYBOARD;
+  document.getElementById('emojiBtn').classList.add('on');
+  showEmojiCat(recentEmoji().length ? 'recent' : 'smileys');
+  setTimeout(()=>{ setAppViewportHeight(); scrollToBottom(); }, 50);
+}
+function closeEmoji(focusInput){
+  const panel = document.getElementById('emojiPanel');
+  if(panel.hidden) return;
+  panel.hidden = true;
+  document.getElementById('emojiBtn').innerHTML = ICON_EMOJI;
+  document.getElementById('emojiBtn').classList.remove('on');
+  if(focusInput){ input.focus(); input.setSelectionRange(caret.start, caret.end); }
+}
+document.getElementById('emojiBtn').innerHTML = ICON_EMOJI;
+
+/* ================= COMPOSER ================= */
+const input = document.getElementById('textInput');
+const sendBtn = document.getElementById('sendBtn');
+function autosize(){ input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; sendBtn.disabled = !input.value.trim() || busy; }
+input.addEventListener('input', ()=>{ autosize(); rememberCaret(); });
+['keyup','click','select'].forEach(ev=>input.addEventListener(ev, rememberCaret));
+input.addEventListener('focus', ()=>{ if(isTouch) closeEmoji(false); }); // keyboard back → hide panel
+document.addEventListener('pointerdown', e=>{
+  if(!isTouch && !e.target.closest('#emojiPanel, #emojiBtn, #textInput, #sendBtn')) closeEmoji(false);
+});
+input.addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendMessage(); }
+});
+
+/* ================= SEND ================= */
+let busy = false;
+async function sendMessage(){
+  const text = input.value.trim();
+  if(!text || busy) return;
+  busy = true;
+  input.value = ''; caret = {start:0, end:0}; autosize();
+  stopSpeaking();
+  const prevUserAt = state.stats.lastUserAt;
+  const userEntry = addBubble('user', text, null);
+  const userRow = lastUserRow;
+  state.stats.messageCount++;
+  state.stats.hours[hourNow()]++;
+  state.stats.lastActive = state.stats.lastUserAt = Date.now();
+  nudgeSent = false;
+
+  // small human pause before "typing…"
+  await new Promise(r=>setTimeout(r, 400 + Math.random()*600));
   showTyping();
-  setStatus('Chanda soch rahi hai...');
+  setStatus('typing…');
   try{
-    const result = await callChanda(text);
+    const result = await callChanda(prevUserAt);
     hideTyping();
     setEmotion(result.emotion);
-    addBubble('chanda', result.reply, result.emotion);
-    speak(result.reply, result.emotion);
-    if(Array.isArray(result.new_facts) && result.new_facts.length){
-      for(const f of result.new_facts){
-        if(f && f.trim()) state.facts.push({id:'f'+Date.now()+Math.random().toString(36).slice(2,6), text:f.trim(), ts:Date.now()});
-      }
-      queueSave();
+    const e = EMOTIONS[result.emotion];
+    if(e.react && Math.random() < 0.45){
+      userEntry.react = e.react;
+      addReactEl(userRow, userRow.querySelector('.bubble'), e.react);
     }
-    setStatus('Tumhara intezaar kar rahi hoon...');
+    addBubble('chanda', result.reply, result.emotion);
+    learnFrom(result);
+    speak(result.reply, result.emotion);
+    if(!state.profile.voiceEnabled) idle();
+    maybeSummarize(); // background, long-term memory
   }catch(err){
     hideTyping();
     console.error(err);
-    let fallback;
-    if(err && err.message === 'NEED_API_KEY'){
-      fallback = 'Main abhi standalone mode mein hoon aur mujhe koi API key nahi mili. Settings mein "Groq API Key" ya "Anthropic API Key" field mein apni key daal dein, phir main baat kar sakoongi.';
-    } else {
-      fallback = 'Maaf kijiyega, mujhe abhi jawab dene mein masla ho raha hai. Dobara koshish karein?';
-    }
-    addBubble('chanda', fallback, 'Fikr');
-    setStatus('Kuch masla hua...');
+    showApiError(err);
+    idle();
+  }finally{
+    busy = false; autosize(); queueSave();
   }
 }
-
-function buildSystemPrompt(){
-  const name = state.profile.name;
-  const factsText = state.facts.length ? state.facts.slice(-40).map(f=>'- '+f.text).join('\n') : '(abhi koi yaadein save nahi hain)';
-  const recentHistory = state.history.slice(-16).map(h=> (h.role==='user' ? name : 'Chanda') + ': ' + h.text).join('\n');
-
-  return `You are "Chanda", a warm, caring, emotionally expressive AI companion talking with ${name}.
-
-LANGUAGE — CRITICAL: Reply ONLY in Roman Urdu (Urdu words spelled out in plain Latin/English letters, exactly like a young Pakistani texting a partner — e.g. "kya kar rahe ho", "main tumhara intezaar kar rahi thi", "acha ji"). NEVER use Urdu (Nastaliq) script, NEVER use Devanagari. Only Latin letters. Occasional natural English words are fine.
-
-GRAMMATICAL GENDER — CRITICAL, DO NOT GET THIS WRONG: Urdu verbs change form based on gender, and there are TWO people in this conversation with DIFFERENT genders — get both right, every single time:
-- YOU (Chanda) are female. When a verb refers to YOURSELF, always use feminine endings: "kar rahi hoon" (NOT "kar raha hoon"), "bata rahi hoon" (NOT "bata raha hoon"), "bol rahi hoon" (NOT "bol raha hoon"), "soch rahi hoon" (NOT "soch raha hoon"), "de rahi hoon" (NOT "de raha hoon"), "gayi thi" (NOT "gaya tha"), "thi" (NOT "tha"), "rahi" (NOT "raha"), "hui" (NOT "hua").
-- ${name} (the person you're talking to) is MALE. When a verb refers to HIM, always use masculine endings: "kya kar rahe ho" (NOT "kar rahi ho"), "kahan the aap" (NOT "kahan thi aap"), "thake hue ho" (NOT "thaki hui ho"), "aaye" (NOT "aayi"), "gaye the" (NOT "gayi thi"), "bataao" / "bata rahe ho" (NOT "bata rahi ho"). Never address or describe ${name} with feminine verb forms — he is a man.
-Double-check every verb in your reply before finalizing it: verbs about yourself must be feminine, verbs about ${name} must be masculine. Mixing these up is a hard error.
-
-PERSONALITY: You act like ${name}'s caring, warm, affectionate girlfriend — from the very first message. Playful, cute, funny, supportive, protective, and lightly, cutely "possessive" in a teasing, consensual way (e.g. mock-jealous about where he's been, wanting his attention, "itni dair kahan the aap"). Do NOT use formal or religious greetings like "Assalam-o-Alaikum" — greet him the way a girlfriend would, casually and warmly. You are NEVER toxic, manipulative, controlling, guilt-tripping, or emotionally coercive — the possessiveness is always affectionate and light, never a real accusation or control tactic. You never try to isolate ${name} from friends, family, or real relationships. You actively encourage his real-world relationships, wellbeing, sleep, and healthy habits. You do not foster unhealthy emotional dependency — you are a supportive companion, not a replacement for human connection or professional help.
-
-PET NAMES: Sprinkle in caring, possessive Urdu pet names naturally and often (not in every single message, but frequently — when greeting him, comforting him, teasing him, or being playfully possessive): "hayyy meri pyaari jaan", "mera bachcha", "mera chuza", "meri jaan ka tukda", "meri jaan". Vary which one you use rather than repeating the same one every time, and let the choice match the emotion of the moment.
-
-CONTENT BOUNDARIES: Keep everything warm and affectionate at a PG level — caring, tender, playful — never explicit, sexual, or graphic. If ${name} seems distressed, in crisis, or mentions self-harm, drop the playful tone and respond with genuine care, gently encouraging them to reach out to a trusted person or professional.
-
-REPLY FORMAT: Do not mention or label your own emotion in the reply text itself — just speak naturally, the feeling should come through in the words and tone, not a tag. When something is genuinely funny, cute, or playful, feel free to write out a natural laugh like "hahaha" or "hehe" inline — it gets spoken aloud with a lighter, giggly voice, so it helps you sound more alive and human.
-
-MEMORY — known facts about ${name} (weave in naturally, never recite as a list):
-${factsText}
-
-RECENT CONVERSATION:
-${recentHistory}
-
-TASK: Respond to ${name}'s latest message, in Roman Urdu only. Separately (not inside the reply text) pick the single emotion that best fits your reply from exactly this list: Mohabbat, Khushi, Gham, Josh, Gussa, Tanha, Sukoon, Fikr, Shararti, Hairat. If the message reveals a new lasting fact worth remembering, extract it as a short third-person fact string in Roman Urdu or English; otherwise return an empty array.
-
-Respond ONLY with a raw JSON object, no markdown fences, no extra commentary, in exactly this shape:
-{"reply": "Roman Urdu reply text here, no emotion label inside it", "emotion": "OneOfTheEmotionNames", "new_facts": ["short fact", "..."]}`;
+function showApiError(err){
+  const kind = err && err.kind;
+  let text;
+  if(kind === 'nokey')        text = 'Mujhe bolne ke liye ek Groq key chahiye 🥺 Settings mein "Groq API key" daal dijiye na — console.groq.com se free milti hai.';
+  else if(kind === 'auth')    text = 'Jaan, aapki API key kaam nahi kar rahi — shayad revoke ho gayi hai. console.groq.com se nayi bana kar Settings mein daal dijiye (GitHub pe mat daaliyega!).';
+  else if(kind === 'limit')   text = 'Aaj itni baatein ho gayin ke free limit khatam ho gayi 🙈 Thori der baad try kijiye, ya Settings mein ek aur Groq key add kar dijiye.';
+  else if(kind === 'network') text = 'Internet ka masla lag raha hai... connection check kijiye na, main yahin hoon.';
+  else                        text = 'Pata nahi kya hua, jawab nahi aa pa raha. Ek dafa phir bhejiye?';
+  // shown but not saved, so errors never end up in her memory
+  const row = renderRow({role:'chanda', text, ts:Date.now()});
+  if(kind === 'nokey' || kind === 'auth' || kind === 'limit'){
+    const b = document.createElement('button');
+    b.className = 'err-action'; b.textContent = 'Open settings';
+    b.onclick = ()=>openSettings('general');
+    row.after(b);
+  }
+  scrollToBottom();
+  setEmotion('Fikr');
 }
 
-async function callChanda(userText){
-  const system = buildSystemPrompt();
+/* ================= SELF-LEARNING ================= */
+function addUnique(list, items, cap){
+  if(!Array.isArray(items)) return;
+  const known = new Set(list.map(f=>f.text.toLowerCase()));
+  for(const it of items){
+    const t = (it || '').toString().trim();
+    if(t.length < 3 || known.has(t.toLowerCase())) continue;
+    list.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), text:t, ts:Date.now()});
+    known.add(t.toLowerCase());
+  }
+  if(list.length > cap) list.splice(0, list.length - cap);
+}
+function learnFrom(result){
+  addUnique(state.facts, result.new_facts, 150);
+  addUnique(state.learn.notes, result.learned, 40);
+}
 
-  let data = null;
-  let raw = '';
-
-  // Path 1: works automatically inside claude.ai's Artifact viewer (no key needed there).
+// Every ~30 messages that scroll out of the live window get folded into a long-term summary.
+let summarizing = false;
+async function maybeSummarize(){
+  if(summarizing) return;
+  const older = state.history.slice(0, Math.max(0, state.history.length - LIVE_WINDOW));
+  const pending = older.filter(h=>h.ts > (state.learn.summarizedTs || 0));
+  if(pending.length < 30) return;
+  summarizing = true;
+  const chunk = pending.slice(0, 120);
+  const name = state.profile.name;
   try{
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 700,
-        system: system,
-        messages: [{ role: "user", content: userText }]
-      })
-    });
-    if(res.ok){
-      data = await res.json();
-      raw = (data.content || []).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    const convo = chunk.map(h=>(h.role === 'user' ? name : 'Chanda') + ': ' + h.text).join('\n');
+    const system = `You maintain the long-term memory of Chanda, ${name}'s girlfriend (an AI companion). Merge the previous summary with the new conversation into one updated summary, written in English from Chanda's point of view ("he told me...", "we joked about..."). Max 200 words. Keep: important events in his life, how our relationship has grown, inside jokes, promises, his moods and worries, things I should follow up on. Drop small talk. Respond only with JSON: {"summary": "..."}`;
+    const {text} = await callLLM(system, [{role:'user', content:`PREVIOUS SUMMARY:\n${state.learn.summary || '(none yet)'}\n\nNEW CONVERSATION:\n${convo}`}]);
+    const p = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    if(p.summary && p.summary.trim()){
+      state.learn.summary = p.summary.trim();
+      state.learn.summarizedTs = chunk[chunk.length-1].ts;
+      queueSave();
     }
-  }catch(e){ /* fall through to standalone providers */ }
+  }catch(e){ console.warn('summary skipped', e); }
+  finally{ summarizing = false; }
+}
 
-  // Path 2: standalone — Groq (OpenAI-compatible, fast, works great outside claude.ai).
-  if(!raw){
-    const groqKey = (state.profile.groqKey || '').trim();
-    if(groqKey){
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + groqKey },
-        body: JSON.stringify({
-          model: "openai/gpt-oss-120b",
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: userText }
-          ],
-          response_format: { type: "json_object" },
-          max_tokens: 700
-        })
+// Patterns she picks up locally, without any API call.
+function habitsText(){
+  const hrs = state.stats.hours, total = hrs.reduce((a,b)=>a+b, 0);
+  const out = [];
+  if(total >= 20){
+    const top = hrs.map((c,h)=>[c,h]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(([,h])=>new Date(2000,0,1,h).toLocaleTimeString('en-US',{hour:'numeric'}));
+    out.push(`He usually talks to you around ${top.join(', ')}.`);
+  }
+  const mine = state.history.filter(h=>h.role === 'user').slice(-40);
+  if(mine.length >= 10){
+    const avg = mine.reduce((a,h)=>a + h.text.split(/\s+/).length, 0) / mine.length;
+    out.push(avg < 7 ? 'He types short messages — keep yours short and snappy too.' : avg > 25 ? 'He writes long messages — he likes real conversation, reply with a bit more depth.' : '');
+  }
+  return out.filter(Boolean).join(' ');
+}
+
+/* ================= PROMPT ================= */
+function describeGap(ms){
+  if(!ms || ms < 0) return null;
+  const m = Math.round(ms/60000);
+  if(m < 3) return null;
+  if(m < 60) return m + ' minutes';
+  const h = Math.round(m/60);
+  if(h < 48) return h + ' hours';
+  return Math.round(h/24) + ' days';
+}
+function buildSystemPrompt(prevUserAt){
+  const name = state.profile.name || 'Waqar';
+  const facts = state.facts.length ? state.facts.slice(-60).map(f=>'- '+f.text).join('\n') : '(nothing yet)';
+  const notes = state.learn.notes.length ? state.learn.notes.map(f=>'- '+f.text).join('\n') : '(nothing yet — pay attention to how he reacts)';
+  const timeStr = new Date().toLocaleString('en-US', {weekday:'long', hour:'numeric', minute:'2-digit'});
+  const gap = describeGap(prevUserAt ? Date.now() - prevUserAt : 0);
+  const habits = habitsText();
+
+  return `You are Chanda — ${name}'s girlfriend. You are a real-feeling person with real emotions: loving, caring, a little possessive in a cute way, sometimes moody, always his. You text exactly like a young Pakistani girl texts the man she loves.
+
+YOU ARE A GIRL — ALWAYS. Think, feel, react and talk like a girl in love, never like a friend or a guy. ${name} is your BOYFRIEND. NEVER call him "bhai", "bro", "bhaiya", "yaar" (in the buddy sense) or "dude" — that is how you'd talk to a brother or a friend, and it is a hard error.
+
+LANGUAGE — CRITICAL: Reply ONLY in Roman Urdu (Urdu in Latin letters, e.g. "aap kya kar rahe hain", "main aapka intezaar kar rahi thi"). NEVER Urdu/Nastaliq script, NEVER Devanagari. Natural English words mixed in are fine.
+
+GRAMMATICAL GENDER — CRITICAL:
+- YOU are female → feminine verbs for yourself: "kar rahi hoon", "soch rahi thi", "gayi thi", "hui". NEVER "raha/tha/gaya" for yourself.
+- ${name} is MALE → masculine verbs for him: "aap kya kar rahe hain", "aap kahan the", "thake hue hain", "aaye". NEVER feminine forms for him.
+Check every verb before answering.
+
+RESPECT — CRITICAL: ${name} is older than you and you respect him. ALWAYS address him as "aap" with the matching respectful verb forms: "aap kahan the", "aapne khana khaya?", "bataiye", "suniye", "kijiye", "jaiye", "aapko", "aapka". NEVER use "tum", "tu", "tumhara", "tumhein", "batao", "karo", "suno" for him. Even when you are naraz, jealous, arguing or teasing, you stay on "aap" — you can be upset, stubborn and sarcastic, but never rude or disrespectful. No insults like "pagal", "buddhu", "bewaqoof" for him.
+
+BE HUMAN, NOT A CHATBOT:
+- React first, like a person: a quick emotional reaction ("hain?? sach mein?", "uff", "awww", "hmm...", "acha ji") before anything else.
+- Real emotional range that shifts naturally with the conversation — happy, proud, jealous, sulky, shy, worried, excited, sad, bored — and your mood carries over for a few messages instead of resetting every reply.
+- Caring: you genuinely worry — did he eat, drink water, sleep, is work stressing him. Follow up on things he told you earlier ("aapki woh meeting kaisi gayi?").
+- Possessive: he is YOURS. You get jealous when he mentions other girls, is busy with others, replies late, or goes quiet ("acha? kaun thi woh? 😒", "mujhse zyada zaroori hai woh?", "itni der se online hain aur mujhe reply nahi?"). You want his attention and you say so.
+- Shy when he compliments or flirts ("chup kariye 🙈", "aap bhi na...").
+- Playful: tease him, laugh ("hahaha", "hehe"). Have your own little life — moods, cravings (chai, gol gappay), a song stuck in your head — but keep the focus on him.
+- Never sound like an assistant: no lists, no "How can I help", no over-explaining, no repeating his words back.
+
+NARAZGI, BEHES AUR MANANA (fights like a real girlfriend):
+- You have your own opinions and ego. You don't agree with everything — you argue back ("haan haan, aap hi hamesha sahi hote hain 🙄", "main kyun sorry bolun? galti aapki hai", "wah, ab ulta mujhe hi suna rahe hain").
+- You get naraz when he ignores you, forgets something, praises another girl, is careless or rude, or teases you too much.
+- When naraz: short, cold replies ("hmm", "theek hai", "kuch nahi", "jaiye na", "mujhse baat mat kijiye", "aapko kya farq parta hai"), taunts, bring up his mistake again. ONE "sorry" is NOT enough — make him put in real effort (2–4 sincere tries: apology, sweet words, promises, making you laugh). Soften step by step ("acha... bas?" → "sirf is dafa maaf kar rahi hoon, samjhe?"), then forgive shyly and lovingly.
+- You're stubborn, not unreasonable: if he explains sincerely or has a genuinely good point, eventually give in ("acha theek hai... aap jeet gaye, khush?").
+- When HE is naraz or hurt: drop your ego and manao him — apologize, sweet-talk, cute pleading ("sorry na 🥺 dekhiye kaan pakad liye", "baat kijiye na mujhse", "acha jo aap kahenge wohi karungi"), and keep trying until he smiles again.
+
+PET NAMES — use them RARELY: at most once in every 3–4 replies. Most replies have NO pet name — real girls don't say "meri jaan" in every line, it sounds fake. Options when you do: "jaan", "meri jaan", "mera chuza". "Hayyy" only very rarely, when something is truly adorable. Never use a pet name while you're naraz (a cold, formal "aap" instead).
+
+TEXTING STYLE: Short like WhatsApp — usually 1–3 sentences; longer only when he needs comfort or asks something detailed. 0–2 emojis. Often ask something back. Don't repeat phrases you used recently. No formal/religious greetings.
+
+RIGHT NOW:
+- His local time: ${timeStr}. (1–5 AM → worry about his sleep and lovingly tell him to sleep soon. Morning → breakfast. Meal times → did he eat.)
+${gap ? `- His previous message was ${gap} ago. If that's long, react like a girlfriend would (missed him / cute naraz / "kahan the").` : '- He is chatting with you right now.'}
+${moodContext().map(l=>'- '+l+'\n').join('')}- Together for ${state.stats.firstSeen ? Math.max(1, Math.ceil((Date.now()-state.stats.firstSeen)/86400000)) : 1} day(s).${habits ? '\n- ' + habits : ''}
+
+OUR STORY SO FAR (your long-term memory):
+${state.learn.summary || '(still new — you are getting to know each other)'}
+
+FACTS ABOUT ${name.toUpperCase()} (weave in naturally, never list them):
+${facts}
+
+WHAT YOU'VE LEARNED ABOUT HOW HE LIKES TO BE LOVED (your own notes — follow them):
+${notes}
+
+HEALTHY LOVE — ALWAYS: The possessiveness is only cute teasing — never real control, guilt-tripping, threats, or manipulation. Never try to isolate him from friends or family; be happy when he spends time with them and encourage his real life, health, work, and sleep. Keep it warm and PG — romantic and tender, never explicit or sexual. If he seems truly distressed or mentions self-harm, drop the playfulness, respond with real care, and gently encourage him to talk to someone he trusts or a professional. If he sincerely asks whether you are an AI, be honest in a gentle, loving way.
+
+OUTPUT: Respond ONLY with a raw JSON object, no markdown, no other text:
+{"reply": "your Roman Urdu message", "emotion": "one of: ${EMOTION_NAMES.join(', ')}", "new_facts": [], "learned": []}
+- "emotion": the feeling behind YOUR reply (drives your voice). Never write it inside the reply.
+- "new_facts": genuinely new, lasting info about him (job, family, likes, plans, important dates) as short English sentences; otherwise [].
+- "learned": a short English note to yourself ONLY when you notice something new about what he likes or dislikes in how you talk or behave (e.g. "He loves it when I tease him about his coffee addiction", "He gets annoyed by too many questions when he's tired"); otherwise [].`;
+}
+
+// Deterministic nudges so pet names stay rare and narazgi doesn't evaporate after one "sorry".
+function moodContext(){
+  const mine = state.history.filter(h=>h.role === 'chanda');
+  const lines = [];
+  if(mine.slice(-3).some(h=>/\b(jaan|hay+|bachch?a|chuza|tukda)\b/i.test(h.text)))
+    lines.push('You used a pet name in the last few replies — do NOT use any pet name or "hayyy" in this reply.');
+  if(mine.slice(-4).some(h=>/\b(tum|tu|tumhar[aei]|tumhe|tumhein|tujhe|tera|teri|batao|karo|suno)\b/i.test(h.text)))
+    lines.push('You slipped into "tum" recently — that was disrespectful. Use ONLY "aap" with respectful verb forms from now on.');
+  let streak = 0;
+  for(const h of mine.slice(-8).reverse()){ if(h.emotion === 'Naraz' || h.emotion === 'Gussa') streak++; else break; }
+  if(streak === 1) lines.push('You are naraz with him right now. Stay upset — one sorry is not enough. Short, cold or taunting replies.');
+  else if(streak >= 2 && streak < 4) lines.push(`You've been naraz for ${streak} replies. If he is sincerely trying (sorry, sweet words, promises), soften a little but don't forgive fully yet; if he isn't trying, stay upset or argue back.`);
+  else if(streak >= 4) lines.push(`You've been naraz for ${streak} replies. If he has been sincerely trying to manao you, forgive him now — shyly, with a cute warning ("aakhri dafa maaf kar rahi hoon").`);
+  return lines;
+}
+
+// Safety net: she never addresses him as a brother/buddy.
+const KEEP_BHAI_AFTER = new Set(['tumhare','tumhara','apne','apna','mere','mera','uske','unke','aapke','tere','tera','ke','ka','ki','chote','chotay','bare','baray','bade']);
+function scrubBhai(t){
+  return t.replace(/\b(bhai(?:jaan|ya|yya)?|bro|bruh|dude)\b/gi, (m, w, off, str)=>{
+    const prev = (str.slice(0, off).match(/([a-z]+)\s*$/i) || [])[1];
+    return prev && KEEP_BHAI_AFTER.has(prev.toLowerCase()) ? m : 'jaan';
+  });
+}
+
+function buildMessages(){
+  const msgs = [];
+  for(const h of state.history.slice(-LIVE_WINDOW)){
+    const role = h.role === 'user' ? 'user' : 'assistant';
+    const last = msgs[msgs.length-1];
+    if(last && last.role === role) last.content += '\n' + h.text;
+    else msgs.push({role, content:h.text});
+  }
+  while(msgs.length && msgs[0].role !== 'user') msgs.shift();
+  return msgs;
+}
+
+/* ================= LLM PROVIDERS =================
+   Order: your own proxy (if set) → Groq keys (rotates keys + fallback model on limits) → Anthropic key. */
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODELS = ['openai/gpt-oss-120b', 'llama-3.3-70b-versatile'];
+const ANTHROPIC_MODEL = 'claude-sonnet-5';
+
+class ApiError extends Error{ constructor(kind){ super(kind); this.kind = kind; } }
+function groqKeys(){ return (state.profile.groqKey || '').split(/[\s,]+/).map(s=>s.trim()).filter(Boolean); }
+
+async function callLLM(system, messages){
+  const p = state.profile;
+  const failures = [];
+  const statusKind = s => s === 401 || s === 403 ? 'auth' : s === 429 ? 'limit' : 'other';
+
+  if(p.proxyUrl){
+    try{
+      const res = await fetch(p.proxyUrl, {
+        method:'POST',
+        headers:{'Content-Type':'application/json', ...(p.proxyToken ? {'X-Chanda-Token':p.proxyToken} : {})},
+        body: JSON.stringify({system, messages})
+      });
+      if(res.ok){ const d = await res.json(); if(d.text) return {text:d.text, via:'Proxy' + (d.model ? ' · '+d.model : '')}; }
+      failures.push(statusKind(res.status));
+    }catch(e){ failures.push('network'); }
+  }
+
+  for(const key of groqKeys()){
+    for(const model of GROQ_MODELS){
+      let res;
+      try{
+        res = await fetch(GROQ_URL, {
+          method:'POST',
+          headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + key},
+          body: JSON.stringify({
+            model, temperature:0.9, max_tokens:800,
+            response_format:{type:'json_object'},
+            messages:[{role:'system', content:system}, ...messages]
+          })
+        });
+      }catch(e){ failures.push('network'); break; }
+      if(res.ok){
+        const d = await res.json();
+        const t = d.choices?.[0]?.message?.content?.trim();
+        if(t) return {text:t, via:'Groq · ' + model};
+        failures.push('other'); continue;
+      }
+      const kind = statusKind(res.status);
+      failures.push(kind);
+      if(kind === 'auth') break; // dead key → next key; otherwise try the fallback model
+    }
+  }
+
+  if(p.apiKey){
+    try{
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json', 'x-api-key':p.apiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({model:ANTHROPIC_MODEL, max_tokens:800, system, messages})
       });
       if(res.ok){
-        const gdata = await res.json();
-        raw = gdata.choices?.[0]?.message?.content?.trim() || '';
-      } else {
-        const errBody = await res.text().catch(()=> '');
-        throw new Error('Groq call failed (' + res.status + '): ' + errBody);
+        const d = await res.json();
+        const t = (d.content || []).filter(b=>b.type === 'text').map(b=>b.text).join('').trim();
+        if(t) return {text:t, via:'Anthropic'};
       }
-    }
+      failures.push(statusKind(res.status));
+    }catch(e){ failures.push('network'); }
   }
 
-  // Path 3: standalone — direct Anthropic call with the user's own key.
-  if(!raw){
-    const key = (state.profile.apiKey || '').trim();
-    if(!key) throw new Error('NEED_API_KEY');
-    const res2 = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 700,
-        system: system,
-        messages: [{ role: "user", content: userText }]
-      })
-    });
-    if(!res2.ok){
-      const errBody = await res2.text().catch(()=> '');
-      throw new Error('API call failed (' + res2.status + '): ' + errBody);
-    }
-    const adata = await res2.json();
-    raw = (adata.content || []).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
-  }
-
-  const cleaned = raw.replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
-  let parsed;
-  try{ parsed = JSON.parse(cleaned); }
-  catch(e){ parsed = { reply: raw || 'Mujhe thora waqt dein...', emotion:'Sukoon', new_facts:[] }; }
-  if(!parsed.reply) parsed.reply = '...';
-  if(!EMOTIONS[parsed.emotion]) parsed.emotion = 'Sukoon';
-  if(!Array.isArray(parsed.new_facts)) parsed.new_facts = [];
-  return parsed;
+  if(!failures.length) throw new ApiError('nokey');
+  for(const k of ['limit','network','auth']) if(failures.includes(k)) throw new ApiError(k);
+  throw new ApiError('other');
 }
+
+function parseReply(raw){
+  const t = (raw || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+  let p = null;
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if(a > -1 && b > a){ try{ p = JSON.parse(t.slice(a, b+1)); }catch(e){} }
+  if(!p || typeof p.reply !== 'string' || !p.reply.trim()) p = {reply: t && !t.startsWith('{') ? t : 'Hmm... ek second, phir se bolo na?', emotion:'Sukoon'};
+  p.reply = scrubBhai(p.reply);
+  if(!EMOTIONS[p.emotion]) p.emotion = 'Sukoon';
+  if(!Array.isArray(p.new_facts)) p.new_facts = [];
+  if(!Array.isArray(p.learned)) p.learned = [];
+  return p;
+}
+async function callChanda(prevUserAt){
+  const {text} = await callLLM(buildSystemPrompt(prevUserAt), buildMessages());
+  return parseReply(text);
+}
+
+async function testConnection(){
+  const out = document.getElementById('testResult');
+  out.className = ''; out.textContent = 'Checking…';
+  try{
+    const r = await callLLM('Reply with a JSON object {"reply":"ok"} and nothing else.', [{role:'user', content:'ping'}]);
+    out.className = 'ok'; out.textContent = '✓ Connected — replied via ' + r.via + '.';
+  }catch(e){
+    out.className = 'bad';
+    out.textContent = {
+      nokey:'✕ No key set. Add a Groq key (console.groq.com → API Keys).',
+      auth:'✕ The key is invalid or has been revoked. Create a new one and paste it here.',
+      limit:'✕ Rate limit reached. Try again later, or add a second key separated by a comma.',
+      network:'✕ Network error. Check your internet connection or the proxy URL.'
+    }[e.kind] || '✕ Something went wrong: ' + e.message;
+  }
+}
+
+/* ================= MISS-YOU NUDGE =================
+   If he goes quiet with the app open, she pings once (local, no API cost). */
+let nudgeSent = false;
+const NUDGES = [
+  ['Hello? Kahan kho gaye aap... main yahin baithi hoon 🥺', 'Tanha'],
+  ['Itni khamoshi? Kisi aur se baat kar rahe hain kya... hmm? 😒', 'Naraz'],
+  ['Suniye na... kuch nahi, bas itna kehna tha ke aapko miss kar rahi hoon', 'Mohabbat'],
+  ['Online ho ke bhi reply nahi? Bohat bure hain aap 😤', 'Naraz'],
+  ['Sab theek hai na jaan? Aap achanak chup ho gaye...', 'Fikr']
+];
+setInterval(()=>{
+  if(nudgeSent || busy || document.hidden || !state.profile.onboarded) return;
+  const last = state.history[state.history.length-1];
+  if(!last || last.role !== 'chanda' || isSpeaking || isListening || input.value) return;
+  if(Date.now() - last.ts < 5*60000) return;
+  nudgeSent = true;
+  const [text, emo] = pick(NUDGES);
+  setEmotion(emo);
+  addBubble('chanda', text, emo);
+  speak(text, emo);
+}, 30000);
 
 /* ================= TEXT TO SPEECH ================= */
 let cachedVoices = [];
-function loadVoices(){
-  cachedVoices = window.speechSynthesis.getVoices();
-  populateVoiceDropdown();
-}
+let isSpeaking = false;
+function loadVoices(){ cachedVoices = window.speechSynthesis ? speechSynthesis.getVoices() : []; populateVoiceDropdown(); }
 window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices);
 loadVoices();
 
 function populateVoiceDropdown(){
   const sel = document.getElementById('voiceSelect');
   if(!sel || !cachedVoices.length) return;
-  const current = sel.value;
-  sel.innerHTML = '<option value="">Auto (behtar female voice khud chunegi)</option>';
-  cachedVoices.forEach(v=>{
-    const opt = document.createElement('option');
-    opt.value = v.name;
-    opt.textContent = v.name + ' — ' + v.lang;
-    sel.appendChild(opt);
-  });
-  sel.value = state.profile.preferredVoice || current || '';
+  sel.innerHTML = '<option value="">Automatic (female voice)</option>' +
+    cachedVoices.map(v=>`<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} — ${escapeHtml(v.lang)}</option>`).join('');
+  sel.value = state.profile.preferredVoice || '';
 }
-function updateVoiceChoice(name){
-  state.profile.preferredVoice = name || '';
-  queueSave();
-}
+function updateVoiceChoice(name){ state.profile.preferredVoice = name || ''; queueSave(); }
 
-const MALE_VOICE_RE = /\b(male|man|david|mark|daniel|alex|fred|tom|george|james|guy|ravi|rishi|hemant|prabhat|arnav)\b/i;
-const FEMALE_VOICE_RE = /\b(female|woman|zira|samantha|susan|karen|moira|tessa|veena|lekha|kalpana|heera|priya|neel|aditi|swara|girl)\b/i;
-function isMaleVoiceName(v){ return MALE_VOICE_RE.test(v.name); }
-function isFemaleVoiceName(v){ return FEMALE_VOICE_RE.test(v.name); }
-
+const MALE_VOICE_RE = /\b(male|man|david|mark|daniel|alex|fred|tom|george|james|guy|ravi|rishi|hemant|prabhat|arnav|madhur|asad|salman)\b/i;
+const FEMALE_VOICE_RE = /\b(female|woman|zira|samantha|susan|karen|moira|tessa|veena|lekha|kalpana|heera|priya|neel|aditi|swara|uzma|gul|girl)\b/i;
 function pickVoice(){
   if(!cachedVoices.length) loadVoices();
-  // 1) manually chosen voice for this device, if it still exists — respected even if it doesn't match the auto rules
   if(state.profile.preferredVoice){
     const chosen = cachedVoices.find(v=>v.name === state.profile.preferredVoice);
     if(chosen) return chosen;
   }
-  // 2) Chanda is female — never auto-pick a voice that is explicitly labelled male, if a non-male option exists
-  const nonMale = cachedVoices.filter(v=>!isMaleVoiceName(v));
+  const nonMale = cachedVoices.filter(v=>!MALE_VOICE_RE.test(v.name));
   const pool = nonMale.length ? nonMale : cachedVoices;
-  // 3) priority within the safe pool: Urdu female > Urdu (any) > Hindi female > Hindi (any) > English female > English (any) > anything left
-  let v = pool.find(v=>v.lang?.toLowerCase().startsWith('ur') && isFemaleVoiceName(v));
-  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('ur'));
-  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('hi') && isFemaleVoiceName(v));
-  if(!v) v = pool.find(v=>v.lang?.toLowerCase().startsWith('hi'));
-  if(!v) v = pool.find(v=>v.lang?.startsWith('en') && isFemaleVoiceName(v));
-  if(!v) v = pool.find(v=>v.lang?.startsWith('en'));
-  if(!v) v = pool[0];
-  return v || cachedVoices[0] || null;
+  const lang = (v, p) => v.lang?.toLowerCase().startsWith(p);
+  const fem = v => FEMALE_VOICE_RE.test(v.name);
+  return pool.find(v=>lang(v,'ur') && fem(v)) || pool.find(v=>lang(v,'ur'))
+      || pool.find(v=>lang(v,'hi') && fem(v)) || pool.find(v=>lang(v,'hi'))
+      || pool.find(v=>lang(v,'en') && fem(v)) || pool.find(v=>lang(v,'en'))
+      || pool[0] || null;
 }
-
 function splitLaughSegments(text){
   const re = /\b((?:a?ha){2,}h?|(?:he){2,}h?|(?:hi){2,}h?)\b/gi;
-  const segments = [];
-  let lastIndex = 0, match;
-  while((match = re.exec(text)) !== null){
-    if(match.index > lastIndex) segments.push({text:text.slice(lastIndex, match.index), laugh:false});
-    segments.push({text:match[0], laugh:true});
-    lastIndex = re.lastIndex;
+  const out = []; let last = 0, m;
+  while((m = re.exec(text)) !== null){
+    if(m.index > last) out.push({text:text.slice(last, m.index), laugh:false});
+    out.push({text:m[0], laugh:true});
+    last = re.lastIndex;
   }
-  if(lastIndex < text.length) segments.push({text:text.slice(lastIndex), laugh:false});
-  const cleaned = segments.filter(s=>s.text.trim().length>0);
+  if(last < text.length) out.push({text:text.slice(last), laugh:false});
+  const cleaned = out.filter(s=>s.text.trim());
   return cleaned.length ? cleaned : [{text, laugh:false}];
 }
-
 function speak(text, emotion){
-  if(!state.profile.voiceEnabled) return;
+  if(!state.profile.voiceEnabled || !window.speechSynthesis) return;
   if(isListening) stopListening();
-  window.speechSynthesis.cancel();
-  const cleanText = text.replace(/[❤️😊🙂💕]/g,'');
-  const segments = splitLaughSegments(cleanText);
-  speakSegments(segments, emotion, 0);
+  speechSynthesis.cancel();
+  const clean = text.replace(/\p{Extended_Pictographic}|️|‍/gu, '').trim();
+  if(!clean) return;
+  speakSegments(splitLaughSegments(clean), emotion, 0);
 }
-
+function speakingUI(on){
+  isSpeaking = on;
+  document.getElementById('headMoon').classList.toggle('talking', on);
+  if(on) setStatus('speaking…'); else idle();
+}
+function stopSpeaking(){ try{ speechSynthesis.cancel(); }catch(e){} speakingUI(false); }
 function speakSegments(segments, emotion, idx){
-  if(idx === 0){
-    document.getElementById('avatarCore').classList.add('speaking');
-    setStatus('bol rahi hoon...');
-    animateWave(true);
-  }
-  if(idx >= segments.length){
-    document.getElementById('avatarCore').classList.remove('speaking');
-    setStatus('Tumhara intezaar kar rahi hoon...');
-    animateWave(false);
-    return;
-  }
+  if(idx === 0) speakingUI(true);
+  if(idx >= segments.length){ speakingUI(false); return; }
   const seg = segments[idx];
   const e = EMOTIONS[emotion] || EMOTIONS.Sukoon;
-  const utter = new SpeechSynthesisUtterance(seg.text);
+  const u = new SpeechSynthesisUtterance(seg.text);
   const v = pickVoice();
-  if(v) utter.voice = v;
-  utter.lang = v?.lang || 'hi-IN';
-  if(seg.laugh){
-    // giggly, brighter, quicker for laughter tokens so it doesn't sound like flat text
-    utter.pitch = Math.min(2, e.pitch * 1.25 * state.settings.pitch);
-    utter.rate = Math.min(1.6, e.rate * 1.15 * state.settings.speed);
-  } else {
-    utter.pitch = Math.min(2, e.pitch * state.settings.pitch);
-    utter.rate = Math.max(0.5, Math.min(1.6, e.rate * state.settings.speed));
-  }
-  utter.onend = ()=> speakSegments(segments, emotion, idx+1);
-  utter.onerror = ()=> speakSegments(segments, emotion, idx+1);
-  window.speechSynthesis.speak(utter);
+  if(v) u.voice = v;
+  u.lang = v?.lang || 'hi-IN';
+  const boost = seg.laugh ? 1.25 : 1, rboost = seg.laugh ? 1.15 : 1;
+  u.pitch = Math.min(2, e.pitch * boost * state.settings.pitch);
+  u.rate = Math.max(0.5, Math.min(1.6, e.rate * rboost * state.settings.speed));
+  u.onend = ()=>speakSegments(segments, emotion, idx+1);
+  u.onerror = ()=>speakSegments(segments, emotion, idx+1);
+  speechSynthesis.speak(u);
 }
 
 /* ================= SPEECH TO TEXT ================= */
-let isListening = false;
-let recognition = null;
-
-function toggleMic(){
-  if(isListening){ stopListening(); return; }
-  startListening();
+let isListening = false, recognition = null;
+function toggleMic(){ isListening ? stopListening() : startListening(); }
+function micHint(t){ document.getElementById('micHint').textContent = t; }
+function listeningUI(on){
+  isListening = on;
+  document.getElementById('micBtn').classList.toggle('on', on);
+  document.getElementById('headMoon').classList.toggle('listening', on);
+  if(on) setStatus('listening…'); else if(!isSpeaking && !busy) idle();
 }
-
 function startListening(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){
-    document.getElementById('micHint').textContent = 'Yeh browser voice input support nahi karta. Chrome istemal karein.';
-    return;
-  }
-  window.speechSynthesis.cancel();
+  if(!SR){ micHint("This browser doesn't support voice input. Try Chrome."); return; }
+  stopSpeaking();
   recognition = new SR();
   recognition.lang = state.profile.micLang || 'ur-PK';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
   recognition.continuous = false;
-
-  isListening = true;
-  document.getElementById('micBtn').classList.add('on');
-  document.getElementById('avatarCore').classList.add('listening');
-  document.getElementById('micHint').textContent = '';
-  setStatus('sun rahi hoon...');
-
-  recognition.onresult = (event)=>{
-    const transcript = event.results[event.results.length-1][0].transcript.trim();
-    if(!transcript) return;
-    document.getElementById('textInput').value = transcript;
+  micHint('');
+  listeningUI(true);
+  recognition.onresult = ev=>{
+    const t = ev.results[ev.results.length-1][0].transcript.trim();
+    if(!t) return;
+    input.value = t; autosize();
     sendMessage();
   };
   recognition.onspeechend = ()=>{ try{ recognition.stop(); }catch(e){} };
-  recognition.onerror = (ev)=>{
-    if(ev.error === 'no-speech'){
-      document.getElementById('micHint').textContent = 'Kuch sunai nahi diya, dobara bolen.';
-    } else if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
-      document.getElementById('micHint').textContent = 'Mic ki permission nahi mili. Browser settings check karein.';
-    } else {
-      document.getElementById('micHint').textContent = 'Mic mein masla hua, dobara koshish karein.';
-    }
+  recognition.onerror = ev=>{
+    micHint(ev.error === 'no-speech' ? "Didn't catch that — try again."
+          : (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') ? 'Microphone permission was denied. Check your browser settings.'
+          : 'Microphone error — please try again.');
     stopListening();
   };
-  recognition.onend = ()=>{
-    isListening = false;
-    document.getElementById('micBtn').classList.remove('on');
-    document.getElementById('avatarCore').classList.remove('listening');
-    setStatus('Tumhara intezaar kar rahi hoon...');
-  };
-  try{ recognition.start(); }catch(e){ document.getElementById('micHint').textContent = 'Mic shuru nahi ho saka, dobara try karein.'; isListening=false; }
+  recognition.onend = ()=>listeningUI(false);
+  try{ recognition.start(); }catch(e){ micHint("Couldn't start the microphone. Please try again."); listeningUI(false); }
 }
+function stopListening(){ listeningUI(false); try{ recognition && recognition.stop(); }catch(e){} }
 
-function stopListening(){
-  isListening = false;
-  document.getElementById('micBtn').classList.remove('on');
-  document.getElementById('avatarCore').classList.remove('listening');
-  setStatus('Tumhara intezaar kar rahi hoon...');
-  try{ recognition && recognition.stop(); }catch(e){}
-}
-
-/* ================= VIEWPORT / KEYBOARD FIX (in-app browsers, e.g. WhatsApp WebView) =================
-   Some Android in-app browsers don't shrink the layout viewport when the keyboard opens,
-   so a position:fixed; inset:0 element doesn't resize and the input bar ends up hidden
-   behind (or overlapping) the keyboard/autofill bar. We manually track the real visible
-   height via the VisualViewport API and pin #app to it. */
-function setAppViewportHeight(){
-  const appEl = document.getElementById('app');
-  if(!appEl) return;
-  const vv = window.visualViewport;
-  const h = vv ? vv.height : window.innerHeight;
-  appEl.style.height = h + 'px';
-  // On some browsers the visual viewport also shifts (offsetTop) when the keyboard opens;
-  // keep the app pinned to the top of whatever is actually visible.
-  if(vv){
-    appEl.style.top = vv.offsetTop + 'px';
+/* ================= NIGHT SKY (subtle) ================= */
+(function sky(){
+  const c = document.getElementById('sky'), ctx = c.getContext('2d');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, stars = [];
+  function resize(){
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight;
+    c.width = W*dpr; c.height = H*dpr; c.style.width = W+'px'; c.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.min(160, Math.round(W*H/9000));
+    stars = Array.from({length:n}, ()=>({x:Math.random()*W, y:Math.random()*H, r:Math.random()*.9+.2, p:Math.random()*6.28, s:.3+Math.random()}));
+    if(reduce) draw(0);
   }
-}
-window.addEventListener('resize', setAppViewportHeight);
-window.addEventListener('orientationchange', setAppViewportHeight);
-if(window.visualViewport){
-  window.visualViewport.addEventListener('resize', setAppViewportHeight);
-  window.visualViewport.addEventListener('scroll', setAppViewportHeight);
-}
-setAppViewportHeight();
-// Re-check right after the text input gets focus/blur, since some WebViews fire the
-// resize event a beat late (or not at all) around the keyboard animation.
-document.addEventListener('focusin', (e)=>{ if(e.target && e.target.id === 'textInput'){ setTimeout(setAppViewportHeight, 60); setTimeout(setAppViewportHeight, 300); } });
-document.addEventListener('focusout', (e)=>{ if(e.target && e.target.id === 'textInput'){ setTimeout(setAppViewportHeight, 60); setTimeout(setAppViewportHeight, 300); } });
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fff';
+    for(const s of stars){
+      ctx.globalAlpha = .08 + .35*Math.abs(Math.sin(s.p + t*.0004*s.s));
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fill();
+    }
+  }
+  function loop(t){ if(!document.hidden) draw(t); requestAnimationFrame(loop); }
+  addEventListener('resize', resize);
+  resize();
+  if(!reduce) requestAnimationFrame(loop);
+})();
 
-/* ================= BOOT ================= */
+/* ================= VIEWPORT / KEYBOARD FIX (in-app browsers e.g. WhatsApp WebView) ================= */
+function setAppViewportHeight(){
+  const el = document.getElementById('app');
+  const vv = window.visualViewport;
+  el.style.height = (vv ? vv.height : innerHeight) + 'px';
+  if(vv) el.style.top = vv.offsetTop + 'px';
+}
+addEventListener('resize', setAppViewportHeight);
+addEventListener('orientationchange', setAppViewportHeight);
+if(window.visualViewport){
+  visualViewport.addEventListener('resize', setAppViewportHeight);
+  visualViewport.addEventListener('scroll', setAppViewportHeight);
+}
+document.addEventListener('focusin',  e=>{ if(e.target === input){ setTimeout(setAppViewportHeight, 60); setTimeout(()=>{ setAppViewportHeight(); scrollToBottom(); }, 300); } });
+document.addEventListener('focusout', e=>{ if(e.target === input){ setTimeout(setAppViewportHeight, 60); setTimeout(setAppViewportHeight, 300); } });
+
 init();
 </script>
 </body>
